@@ -1,0 +1,8 @@
+# output files
+out/*
+
+# IntelliJ files
+.idea/*
+*.iml
+*.eml
+*.userlibraries
