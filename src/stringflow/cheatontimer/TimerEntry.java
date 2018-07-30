@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class TimerEntry {
 	
-	private static ToggleGroup buttonGroup = new ToggleGroup();
+	public static ToggleGroup buttonGroup = new ToggleGroup();
 	
 	private static final int BASE_X = 145;
 	private static final int BASE_Y = 33;
@@ -47,10 +47,12 @@ public class TimerEntry {
 			removeButton.setOnAction(e -> {
 				FixedOffsetTab.instance.removeTimer(this);
 				FixedOffsetTab.instance.getTimer(0).select();
+				buttonGroup.getToggles().remove(radioButton);
 			});
 		}
 		recalcPosition(index);
 		radioButton.setToggleGroup(buttonGroup);
+		radioButton.setFocusTraversable(false);
 		radioButton.setOnAction(e -> FixedOffsetTab.instance.setActiveTimer(this));
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> FixedOffsetTab.instance.setActiveTimer(this));
 		offsetField.textProperty().addListener((observable, oldValue, newValue) -> FixedOffsetTab.instance.setActiveTimer(this));

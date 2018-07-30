@@ -1,14 +1,14 @@
 package stringflow.cheatontimer;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.concurrent.Flow;
 
 public class FixedOffsetTab {
 	
@@ -20,6 +20,7 @@ public class FixedOffsetTab {
 	
 	@FXML
 	public AnchorPane layout;
+	public TabPane tabPane;
 	public Button addButton;
 	public Button startButton;
 	public Button resetButton;

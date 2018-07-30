@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="160.0" maxWidth="265.0" minHeight="160.0" minWidth="265.0" prefHeight="160.0" prefWidth="265.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="160.0" maxWidth="265.0" minHeight="160.0" minWidth="265.0" prefHeight="160.0" prefWidth="265.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stringflow.cheatontimer.SettingsWindow">
   <children>
     <AnchorPane maxHeight="160.0" maxWidth="265.0" minHeight="160.0" minWidth="265.0" prefHeight="160.0" prefWidth="265.0" VBox.vgrow="ALWAYS">
          <children>
@@ -24,36 +24,36 @@
                               <Label layoutX="14.0" layoutY="37.0" text="Reset:" />
                               <Label layoutX="14.0" layoutY="60.0" text="Up:" />
                               <Label layoutX="14.0" layoutY="83.0" text="Down:" />
-                              <TextField layoutX="51.0" layoutY="14.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <TextField layoutX="51.0" layoutY="37.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <TextField layoutX="51.0" layoutY="60.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <TextField layoutX="51.0" layoutY="83.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <TextField layoutX="126.0" layoutY="14.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <TextField layoutX="126.0" layoutY="37.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <TextField layoutX="126.0" layoutY="60.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <TextField layoutX="126.0" layoutY="83.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
-                              <Button layoutX="201.0" layoutY="14.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" prefHeight="20.0" text="Clear">
+                              <TextField fx:id="startInputField1Internal" layoutX="51.0" layoutY="14.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <TextField fx:id="resetInputField1Internal" layoutX="51.0" layoutY="37.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <TextField fx:id="upInputField1Internal" layoutX="51.0" layoutY="60.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <TextField fx:id="downInputField1Internal" layoutX="51.0" layoutY="83.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <TextField fx:id="startInputField2Internal" layoutX="126.0" layoutY="14.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <TextField fx:id="resetInputField2Internal" layoutX="126.0" layoutY="37.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <TextField fx:id="upInputField2Internal" layoutX="126.0" layoutY="60.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <TextField fx:id="downInputField2Internal" layoutX="126.0" layoutY="83.0" maxHeight="20.0" maxWidth="70.0" minHeight="20.0" minWidth="70.0" prefHeight="20.0" prefWidth="70.0" />
+                              <Button layoutX="201.0" layoutY="14.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" onAction="#onStartClearPressed" prefHeight="20.0" text="Clear">
                                  <font>
                                     <Font size="11.0" />
                                  </font>
                               </Button>
-                              <Button layoutX="201.0" layoutY="37.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" prefHeight="20.0" text="Clear">
+                              <Button layoutX="201.0" layoutY="37.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" onAction="#onResetClearPressed" prefHeight="20.0" text="Clear">
                                  <font>
                                     <Font size="11.0" />
                                  </font>
                               </Button>
-                              <Button layoutX="201.0" layoutY="60.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" prefHeight="20.0" text="Clear">
+                              <Button layoutX="201.0" layoutY="60.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" onAction="#onUpClearPressed" prefHeight="20.0" text="Clear">
                                  <font>
                                     <Font size="11.0" />
                                  </font>
                               </Button>
-                              <Button layoutX="201.0" layoutY="83.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" prefHeight="20.0" text="Clear">
+                              <Button layoutX="201.0" layoutY="83.0" maxHeight="20.0" minHeight="20.0" mnemonicParsing="false" onAction="#onDownClearPressed" prefHeight="20.0" text="Clear">
                                  <font>
                                     <Font size="11.0" />
                                  </font>
                               </Button>
-                              <CheckBox layoutX="13.0" layoutY="108.0" mnemonicParsing="false" text="Global Start/Reset" />
-                              <CheckBox layoutX="137.0" layoutY="108.0" mnemonicParsing="false" text="Global Up/Down" />
+                              <CheckBox fx:id="globalStartReset" layoutX="13.0" layoutY="108.0" mnemonicParsing="false" text="Global Start/Reset" />
+                              <CheckBox fx:id="globalUpDown" layoutX="137.0" layoutY="108.0" mnemonicParsing="false" text="Global Up/Down" />
                            </children>
                         </AnchorPane>
                   </content>
