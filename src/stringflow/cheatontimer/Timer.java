@@ -1,8 +1,12 @@
 package stringflow.cheatontimer;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 import java.util.Arrays;
 
@@ -18,20 +22,23 @@ public class Timer {
 	public static long cutoff;
 	public static long elapsedTime;
 	public static boolean visualCue;
+	public static boolean lastVisualCue;
 	
-	private static AnimationTimer animation;
+	private static Timeline animation;
 	
 	static {
-		animation = new AnimationTimer() {
-			public void handle(long now) {
-				long time = (maxOffset - elapsedTime) / 1000000L;
-				if(time < 0) {
-					time = 0;
-				}
-				FixedOffsetTab.instance.setTimerLabel(time);
+		animation = new Timeline(new KeyFrame(Duration.millis(1), (ActionEvent e) -> {
+			long time = (maxOffset - elapsedTime) / 1000000L;
+			if(time < 0) {
+				time = 0;
+			}
+			FixedOffsetTab.instance.setTimerLabel(time);
+			if(visualCue != lastVisualCue) {
 				FixedOffsetTab.instance.visualCueRect.setFill(visualCue ? Color.BLACK : Color.TRANSPARENT);
 			}
-		};
+			lastVisualCue = visualCue;
+		}));
+		animation.setCycleCount(Timeline.INDEFINITE);
 	}
 	
 	public static void calcCurrentTime(TimerEntry entry) {
@@ -65,7 +72,7 @@ public class Timer {
 			currentTimerThread.stop();
 		}
 		new Thread(currentTimerThread = new TimerThread()).start();
-		animation.start();
+		animation.play();
 		FixedOffsetTab.instance.setElements(true);
 	}
 	
@@ -102,7 +109,9 @@ public class Timer {
 					finish();
 					return;
 				}
-				if(elapsedTime < beeps[beepIndex] - cutoff) {
+				boolean audioCutoffMet = FlowTimer.audioCue && elapsedTime < beeps[beepIndex] - cutoff;
+				boolean visualCutoffMet = FlowTimer.visualCue && elapsedTime < visualCues[visualCueIndex] - cutoff;
+				if(audioCutoffMet || visualCutoffMet) {
 					try {
 						Thread.sleep(5);
 					} catch(InterruptedException e) {
