@@ -81,6 +81,7 @@ public class FlowTimer extends Application {
 		settingsWindow.initModality(Modality.APPLICATION_MODAL);
 		
 		// load rest of the settings file
+		(audioEngine instanceof JavaXAudioEngine ? SettingsWindow.instance.javaxAudioEngine : SettingsWindow.instance.tinySoundAudioEngine).setSelected(true);
 		currentBeep = BeepSound.fromString(ini.get("Audio", "file"));
 		audioEngine.setVolume(0);
 		if(currentBeep == BeepSound.BEEP) {
@@ -104,6 +105,7 @@ public class FlowTimer extends Application {
 		SettingsWindow.instance.downInputField2.set(ini.get("Input", "down2Name"), Integer.valueOf(String.valueOf(ini.get("Input", "down2"))));
 		SettingsWindow.instance.globalStartReset.setSelected(Boolean.valueOf(String.valueOf(ini.get("Input", "globalStartReset"))));
 		SettingsWindow.instance.globalUpDown.setSelected(Boolean.valueOf(String.valueOf(ini.get("Input", "globalUpDown"))));
+		SettingsWindow.instance.setUpListeners();
 	}
 	
 	private static Wini loadIniAndSetAudioEngine() throws Exception {

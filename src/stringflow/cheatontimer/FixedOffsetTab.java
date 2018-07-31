@@ -7,6 +7,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -66,12 +67,31 @@ public class FixedOffsetTab {
 		FlowTimer.settingsWindow.showAndWait();
 	}
 	
-	public void setElements(boolean disabled) {
-		settingsButton.setDisable(disabled);
+	public TimerEntry getSelectedTimer() {
+		for(TimerEntry timer : timers) {
+			if(timer.isSelected()) {
+				return timer;
+			}
+		}
+		return null;
 	}
 	
+	public void setElements(boolean disabled) {
+		addButton.setDisable(disabled);
+		settingsButton.setDisable(disabled);
+		for(TimerEntry timer : timers) {
+			timer.setElements(disabled);
+		}
+	}
 	
 	public void setTimerLabel(long time) {
+		if(time < 0) {
+			try {
+				throw new IOException();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
 		timerLabel.setText(String.format(Locale.ENGLISH, "%.3f", (double)time / 1000.0));
 	}
 	

@@ -1,6 +1,7 @@
 package stringflow.cheatontimer;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 
 import java.util.Arrays;
 
@@ -111,6 +112,10 @@ public class Timer {
 			try {
 				Thread.sleep(32);
 				animation.stop();
+				Platform.runLater(() -> {
+					FixedOffsetTab.instance.setTimerLabel(0);
+					FixedOffsetTab.instance.setActiveTimer(FixedOffsetTab.instance.getSelectedTimer());
+				});
 			} catch(InterruptedException e) {
 				e.printStackTrace();
 			}

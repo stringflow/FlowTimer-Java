@@ -2,12 +2,9 @@ package stringflow.cheatontimer;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseDragEvent;
 import stringflow.cheatontimer.audio.BeepSound;
 
 import java.util.Arrays;
@@ -85,6 +82,11 @@ public class SettingsWindow {
 		});
 	}
 	
+	public void setUpListeners() {
+		javaxAudioEngine.selectedProperty().addListener(new AudioEngineListener());
+		tinySoundAudioEngine.selectedProperty().addListener(new AudioEngineListener());
+	}
+	
 	@FXML
 	public void onStartClearPressed() {
 		if(startInputField2.isBound()) {
@@ -121,7 +123,18 @@ public class SettingsWindow {
 		}
 	}
 	
-	private static class AudioFileListener implements ChangeListener<Boolean> {
+	private class AudioEngineListener implements ChangeListener<Boolean> {
+		
+		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			if(javaxAudioEngine.isSelected() || tinySoundAudioEngine.isSelected()) {
+				if(newValue) {
+					AlertBox.showAlert("FlowTimer", "Please restart FlowTimer for this change to take effect.");
+				}
+			}
+		}
+	}
+	
+	private class AudioFileListener implements ChangeListener<Boolean> {
 		
 		private BeepSound sound;
 		

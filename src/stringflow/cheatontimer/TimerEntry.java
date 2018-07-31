@@ -53,11 +53,11 @@ public class TimerEntry {
 		recalcPosition(index);
 		radioButton.setToggleGroup(buttonGroup);
 		radioButton.setFocusTraversable(false);
-		radioButton.setOnAction(e -> FixedOffsetTab.instance.setActiveTimer(this));
-		nameField.textProperty().addListener((observable, oldValue, newValue) -> FixedOffsetTab.instance.setActiveTimer(this));
-		offsetField.textProperty().addListener((observable, oldValue, newValue) -> FixedOffsetTab.instance.setActiveTimer(this));
-		intervalField.textProperty().addListener((observable, oldValue, newValue) -> FixedOffsetTab.instance.setActiveTimer(this));
-		numBeepsField.textProperty().addListener((observable, oldValue, newValue) -> FixedOffsetTab.instance.setActiveTimer(this));
+		radioButton.setOnAction(e -> select());
+		nameField.textProperty().addListener((observable, oldValue, newValue) -> select());
+		offsetField.textProperty().addListener((observable, oldValue, newValue) -> select());
+		intervalField.textProperty().addListener((observable, oldValue, newValue) -> select());
+		numBeepsField.textProperty().addListener((observable, oldValue, newValue) -> select());
 	}
 	
 	public void recalcPosition(int index) {
@@ -112,6 +112,16 @@ public class TimerEntry {
 		FixedOffsetTab.instance.setActiveTimer(this);
 	}
 	
+	public void setElements(boolean disabled) {
+		nameField.setDisable(disabled);
+		offsetField.setDisable(disabled);
+		intervalField.setDisable(disabled);
+		numBeepsField.setDisable(disabled);
+		if(removeButton != null) {
+			removeButton.setDisable(disabled);
+		}
+	}
+	
 	public long[] getOffsets() {
 		return Arrays.stream(offsetField.getText().split("/")).mapToLong(Long::parseLong).toArray();
 	}
@@ -122,6 +132,10 @@ public class TimerEntry {
 	
 	public int getNumBeeps() {
 		return Integer.valueOf(numBeepsField.getText());
+	}
+	
+	public boolean isSelected() {
+		return radioButton.isSelected();
 	}
 	
 	public boolean isAllDataValid() {
