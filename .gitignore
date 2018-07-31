@@ -1,5 +1,6 @@
 # output files
 out/*
+src/META-INF/*
 
 # IntelliJ files
 .idea/*

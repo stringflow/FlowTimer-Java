@@ -127,6 +127,8 @@ public class FixedOffsetTab {
 	public void setElements(boolean disabled) {
 		addButton.setDisable(disabled);
 		settingsButton.setDisable(disabled);
+		importButton.setDisable(disabled);
+		exportButton.setDisable(disabled);
 		for(TimerEntry timer : timers) {
 			timer.setElements(disabled);
 		}
