@@ -7,11 +7,11 @@ import stringflow.cheatontimer.audio.IAudioFile;
 public class TinySoundAudioFile implements IAudioFile {
 	
 	private Sound source;
-	private double volume;
+	private float volume;
 	
 	public IAudioFile loadAudioData(String filePath) {
 		source = TinySound.loadSound(getClass().getResource(filePath));
-		volume = 1.0;
+		volume = 1.0f;
 		return this;
 	}
 	
@@ -19,7 +19,7 @@ public class TinySoundAudioFile implements IAudioFile {
 		source.unload();
 	}
 	
-	public void setVolume(double volume) {
+	public void setVolume(float volume) {
 		this.volume = volume;
 	}
 	

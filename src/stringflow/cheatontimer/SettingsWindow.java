@@ -1,9 +1,14 @@
 package stringflow.cheatontimer;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseDragEvent;
+import stringflow.cheatontimer.audio.BeepSound;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +16,9 @@ import java.util.List;
 public class SettingsWindow {
 	
 	public static SettingsWindow instance = null;
+	
+	public ToggleGroup audioEngineGroup;
+	public ToggleGroup audioFileGroup;
 	
 	public InputField startInputField1;
 	public InputField startInputField2;
@@ -34,6 +42,13 @@ public class SettingsWindow {
 	public TextField downInputField2Internal;
 	public CheckBox globalStartReset;
 	public CheckBox globalUpDown;
+	public RadioButton javaxAudioEngine;
+	public RadioButton tinySoundAudioEngine;
+	public RadioButton beepAudioFile;
+	public RadioButton popAudioFile;
+	public RadioButton dingAudioFile;
+	public RadioButton tickAudioFile;
+	public Slider volumeSlider;
 	
 	private List<InputField> inputFields;
 	
@@ -42,12 +57,32 @@ public class SettingsWindow {
 	}
 	
 	public void initialize() {
+		audioEngineGroup = new ToggleGroup();
+		audioFileGroup = new ToggleGroup();
+		javaxAudioEngine.setToggleGroup(audioEngineGroup);
+		tinySoundAudioEngine.setToggleGroup(audioEngineGroup);
+		beepAudioFile.setToggleGroup(audioFileGroup);
+		popAudioFile.setToggleGroup(audioFileGroup);
+		dingAudioFile.setToggleGroup(audioFileGroup);
+		tickAudioFile.setToggleGroup(audioFileGroup);
+		beepAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.BEEP));
+		popAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.POP));
+		dingAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.DING));
+		tickAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.TICK));
 		inputFields = Arrays.asList(startInputField1 = new InputField(startInputField1Internal), startInputField2 = new InputField(startInputField2Internal), resetInputField1 = new InputField(resetInputField1Internal), resetInputField2 = new InputField(resetInputField2Internal), upInputField1 = new InputField(upInputField1Internal), upInputField2 = new InputField(upInputField2Internal), downInputField1 = new InputField(downInputField1Internal), downInputField2 = new InputField(downInputField2Internal));
 		for(InputField inputField : inputFields) {
 			inputField.getParentField().addEventFilter(KeyEvent.KEY_PRESSED, e -> inputField.getParentField().setText(e.getCode().getName()));
 			inputField.getParentField().addEventFilter(KeyEvent.KEY_TYPED, e -> e.consume());
 			inputField.getParentField().focusedProperty().addListener((arg0, arg1, newValue) -> focuedField = newValue ? inputField : null);
 		}
+		volumeSlider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if(oldValue && !newValue) {
+					FlowTimer.audioEngine.setVolume((float)volumeSlider.getValue() / 100.0f);
+					FlowTimer.currentBeep.play();
+				}
+			}
+		});
 	}
 	
 	@FXML
@@ -83,6 +118,22 @@ public class SettingsWindow {
 			downInputField2.clear();
 		} else {
 			downInputField1.clear();
+		}
+	}
+	
+	private static class AudioFileListener implements ChangeListener<Boolean> {
+		
+		private BeepSound sound;
+		
+		public AudioFileListener(BeepSound sound) {
+			this.sound = sound;
+		}
+		
+		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			if(newValue) {
+				FlowTimer.currentBeep = sound;
+				FlowTimer.currentBeep.play();
+			}
 		}
 	}
 }

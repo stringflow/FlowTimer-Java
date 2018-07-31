@@ -16,6 +16,11 @@ public class InputField {
 		return parentField;
 	}
 	
+	public void set(String name, int keyCode) {
+		this.keyCode = keyCode;
+		parentField.setText(name);
+	}
+	
 	public void setKeyCode(int keyCode) {
 		this.keyCode = keyCode;
 	}

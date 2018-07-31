@@ -77,7 +77,7 @@ public class Timer {
 				long currentTime = System.nanoTime();
 				elapsedTime = currentTime - startTime;
 				if(elapsedTime >= beeps[beepIndex]) {
-					FlowTimer.audioFile.play();
+					FlowTimer.currentBeep.play();
 					beepIndex++;
 					if(beepIndex == beeps.length) {
 						finish();

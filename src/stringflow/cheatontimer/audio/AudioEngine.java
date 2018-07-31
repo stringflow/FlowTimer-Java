@@ -17,6 +17,12 @@ public abstract class AudioEngine {
 		disposeInternal();
 	}
 	
+	public void setVolume(float volume) {
+		for(IAudioFile audioFile : loadedAudioFiles) {
+			audioFile.setVolume(volume);
+		}
+	}
+	
 	public IAudioFile loadAudioData(String filePath) {
 		IAudioFile audioFile = loadAudioFileInternal(filePath);
 		loadedAudioFiles.add(audioFile);
@@ -24,6 +30,8 @@ public abstract class AudioEngine {
 	}
 	
 	public abstract void init();
+	
 	public abstract IAudioFile loadAudioFileInternal(String filePath);
+	
 	public abstract void disposeInternal();
 }
