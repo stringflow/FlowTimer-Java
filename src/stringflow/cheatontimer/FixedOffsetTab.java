@@ -1,14 +1,19 @@
 package stringflow.cheatontimer;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import stringflow.cheatontimer.timerFile.TimerFileUtil;
 
-import java.io.IOException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -27,6 +32,8 @@ public class FixedOffsetTab {
 	public Button startButton;
 	public Button resetButton;
 	public Button settingsButton;
+	public Button importButton;
+	public Button exportButton;
 	public Label timerLabel;
 	public Rectangle visualCueRect;
 	
@@ -67,6 +74,45 @@ public class FixedOffsetTab {
 	@FXML
 	public void onSettingsButtonPress() {
 		FlowTimer.settingsWindow.showAndWait();
+	}
+	
+	@FXML
+	public void onImportButtonPress() {
+		FileChooser filechooser = new FileChooser();
+		filechooser.setTitle("Import Timers");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("FTF files", "*.ftf", "*.ctf");
+		filechooser.getExtensionFilters().add(extFilter);
+		Stage stage = (Stage) layout.getScene().getWindow();
+		File file = filechooser.showOpenDialog(stage);
+		if(file == null) {
+			return;
+		}
+		ArrayList<TimerEntry> loadedTimers = TimerFileUtil.loadTimers(file);
+		if(loadedTimers != null) {
+			for(TimerEntry timer : timers) {
+				timer.removeAllElements(layout);
+			}
+			timers.clear();
+			addAllTimers(loadedTimers);
+			timers.get(0).select();
+			AlertBox.showAlert(Alert.AlertType.INFORMATION, "FlowTimer", "Timers successfully imported.");
+		}
+	}
+	
+	@FXML
+	public void onExportButtonPress() {
+		FileChooser filechooser = new FileChooser();
+		filechooser.setTitle("Export Timers");
+		Stage stage = (Stage) layout.getScene().getWindow();
+		File file = filechooser.showSaveDialog(stage);
+		if(file == null) {
+			return;
+		}
+		if(!file.getName().endsWith(".ftf")) {
+			file = new File(file.getAbsoluteFile() + ".ftf");
+		}
+		TimerFileUtil.saveTimers(file, timers);
+		AlertBox.showAlert(Alert.AlertType.INFORMATION, "FlowTimer", "Timers successfully exported.");
 	}
 	
 	public TimerEntry getSelectedTimer() {
@@ -112,10 +158,19 @@ public class FixedOffsetTab {
 	}
 	
 	public void addNewTimer(String name, long offset, long interval, int numBeeps, boolean addRemoveButton) {
-		TimerEntry timer = new TimerEntry(timers.size(), name, offset, interval, numBeeps, addRemoveButton);
+		TimerEntry timer = new TimerEntry(timers.size(), name, new long[] {offset}, interval, numBeeps, addRemoveButton);
 		timers.add(timer);
 		timer.addAllElements(layout);
 		timer.select();
+		recalcAddButton();
+	}
+	
+	public void addAllTimers(Collection<TimerEntry> inputTimers) {
+		for(TimerEntry timer : inputTimers) {
+			timers.add(timer);
+			timer.addAllElements(layout);
+			timer.select();
+		}
 		recalcAddButton();
 	}
 	

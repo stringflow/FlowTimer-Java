@@ -36,10 +36,10 @@ public class TimerEntry {
 	private TextField numBeepsField;
 	private Button removeButton;
 	
-	public TimerEntry(int index, String name, long offset, long interval, int numBeeps, boolean addRemoveButton) {
+	public TimerEntry(int index, String name, long offsets[], long interval, int numBeeps, boolean addRemoveButton) {
 		radioButton = new RadioButton();
 		nameField = new TextField(String.valueOf(name));
-		offsetField = new TextField(String.valueOf(offset));
+		offsetField = new TextField(Util.convertArrayToString(offsets, "/"));
 		intervalField = new TextField(String.valueOf(interval));
 		numBeepsField = new TextField(String.valueOf(numBeeps));
 		if(addRemoveButton) {
@@ -120,6 +120,10 @@ public class TimerEntry {
 		if(removeButton != null) {
 			removeButton.setDisable(disabled);
 		}
+	}
+	
+	public String getName() {
+		return nameField.getText();
 	}
 	
 	public long[] getOffsets() {

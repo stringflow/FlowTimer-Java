@@ -58,8 +58,8 @@
                   <Font size="11.0" />
                </font>
             </Button>
-            <Button fx:id="settingsButton1" focusTraversable="false" layoutX="10.0" layoutY="175.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onSettingsButtonPress" prefHeight="25.0" prefWidth="100.0" text="Import Timers" />
-            <Button fx:id="settingsButton11" focusTraversable="false" layoutX="10.0" layoutY="205.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onSettingsButtonPress" prefHeight="25.0" prefWidth="100.0" text="Export Timers" />
+            <Button fx:id="importButton" focusTraversable="false" layoutX="10.0" layoutY="175.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onImportButtonPress" prefHeight="25.0" prefWidth="100.0" text="Import Timers" />
+            <Button fx:id="exportButton" focusTraversable="false" layoutX="10.0" layoutY="205.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onExportButtonPress" prefHeight="25.0" prefWidth="100.0" text="Export Timers" />
          </children>
       </AnchorPane>
   </children>

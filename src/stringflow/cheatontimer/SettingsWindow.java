@@ -134,7 +134,7 @@ public class SettingsWindow {
 		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 			if(javaxAudioEngine.isSelected() || tinySoundAudioEngine.isSelected()) {
 				if(newValue) {
-					AlertBox.showAlert("FlowTimer", "Please restart FlowTimer for this change to take effect.");
+					AlertBox.showAlert(Alert.AlertType.INFORMATION, "FlowTimer", "Please restart FlowTimer for this change to take effect.");
 				}
 			}
 		}
