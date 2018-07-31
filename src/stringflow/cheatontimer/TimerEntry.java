@@ -1,5 +1,8 @@
 package stringflow.cheatontimer;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -54,6 +57,15 @@ public class TimerEntry {
 		radioButton.setToggleGroup(buttonGroup);
 		radioButton.setFocusTraversable(false);
 		radioButton.setOnAction(e -> select());
+		radioButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if(newValue) {
+					if(!Timer.isTimerRunning) {
+						Platform.runLater(() -> select());
+					}
+				}
+			}
+		});
 		nameField.textProperty().addListener((observable, oldValue, newValue) -> select());
 		offsetField.textProperty().addListener((observable, oldValue, newValue) -> select());
 		intervalField.textProperty().addListener((observable, oldValue, newValue) -> select());

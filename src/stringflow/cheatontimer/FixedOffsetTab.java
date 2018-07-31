@@ -171,7 +171,6 @@ public class FixedOffsetTab {
 		for(TimerEntry timer : inputTimers) {
 			timers.add(timer);
 			timer.addAllElements(layout);
-			timer.select();
 		}
 		recalcAddButton();
 	}
