@@ -46,6 +46,7 @@ public class SettingsWindow {
 	public RadioButton dingAudioFile;
 	public RadioButton tickAudioFile;
 	public Slider volumeSlider;
+	public ChoiceBox<String> choiceBox;
 	
 	private List<InputField> inputFields;
 	
@@ -54,6 +55,11 @@ public class SettingsWindow {
 	}
 	
 	public void initialize() {
+		choiceBox.getItems().add("Audio");
+		choiceBox.getItems().add("Visual");
+		choiceBox.getItems().add("Audio + Visual");
+		choiceBox.valueProperty().setValue(choiceBox.getItems().get(0));
+		choiceBox.valueProperty().addListener(new VisualChangeListener());
 		audioEngineGroup = new ToggleGroup();
 		audioFileGroup = new ToggleGroup();
 		javaxAudioEngine.setToggleGroup(audioEngineGroup);
@@ -62,10 +68,6 @@ public class SettingsWindow {
 		popAudioFile.setToggleGroup(audioFileGroup);
 		dingAudioFile.setToggleGroup(audioFileGroup);
 		tickAudioFile.setToggleGroup(audioFileGroup);
-		beepAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.BEEP));
-		popAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.POP));
-		dingAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.DING));
-		tickAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.TICK));
 		inputFields = Arrays.asList(startInputField1 = new InputField(startInputField1Internal), startInputField2 = new InputField(startInputField2Internal), resetInputField1 = new InputField(resetInputField1Internal), resetInputField2 = new InputField(resetInputField2Internal), upInputField1 = new InputField(upInputField1Internal), upInputField2 = new InputField(upInputField2Internal), downInputField1 = new InputField(downInputField1Internal), downInputField2 = new InputField(downInputField2Internal));
 		for(InputField inputField : inputFields) {
 			inputField.getParentField().addEventFilter(KeyEvent.KEY_PRESSED, e -> inputField.getParentField().setText(e.getCode().getName()));
@@ -83,6 +85,10 @@ public class SettingsWindow {
 	}
 	
 	public void setUpListeners() {
+		beepAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.BEEP));
+		popAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.POP));
+		dingAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.DING));
+		tickAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.TICK));
 		javaxAudioEngine.selectedProperty().addListener(new AudioEngineListener());
 		tinySoundAudioEngine.selectedProperty().addListener(new AudioEngineListener());
 	}
@@ -147,6 +153,15 @@ public class SettingsWindow {
 				FlowTimer.currentBeep = sound;
 				FlowTimer.currentBeep.play();
 			}
+		}
+	}
+	
+	private class VisualChangeListener implements ChangeListener<String> {
+		
+		
+		public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+			FlowTimer.audioCue = newValue.toLowerCase().contains("audio");
+			FlowTimer.visualCue = newValue.toLowerCase().contains("visual");
 		}
 	}
 }

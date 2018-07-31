@@ -16,6 +16,7 @@ import stringflow.cheatontimer.audio.tinySound.TinySoundAudioEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,46 +28,56 @@ public class FlowTimer extends Application {
 	public static Stage settingsWindow;
 	public static BeepSound currentBeep;
 	
+	public static boolean visualCue = false;
+	public static boolean audioCue = false;
+	
 	private static File folder = new File(System.getenv("APPDATA") + "/FlowTimer");
 	private static File settingsFile = new File(System.getenv("APPDATA") + "/FlowTimer/settings.ini");
 	
 	public void start(Stage primaryStage) throws Exception {
 		Wini ini = loadIniAndSetAudioEngine();
+		String mode = ini.get("Audio", "mode");
+		audioCue = mode.toLowerCase().contains("audio");
+		visualCue = mode.toLowerCase().contains("visual");
+		audioEngine.setVolume(Float.valueOf(String.valueOf(ini.get("Audio", "volume"))));
 		mainFrame = primaryStage;
 		setupNativeHook();
 		GlobalScreen.registerNativeHook();
 		GlobalScreen.addNativeKeyListener(new GlobalScreenListener());
 		primaryStage.setTitle("FlowTimer");
 		primaryStage.setResizable(false);
-		primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/layout/mainFrame.fxml")), 430, 285));
+		primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/layout/mainFrame.fxml")), 430, 335));
 		primaryStage.show();
+		primaryStage.focusedProperty().addListener((arg0, arg1, arg2) -> { if(arg2) FixedOffsetTab.instance.setActiveTimer(FixedOffsetTab.instance.getSelectedTimer());});
 		primaryStage.setOnCloseRequest(e -> {
 			audioEngine.dispose();
 			try {
 				ini.load(settingsFile);
+				ini.clear();
 				Profile.Section audioSection = ini.add("Audio");
-				audioSection.add("engine", SettingsWindow.instance.javaxAudioEngine.isSelected() ? "java" : "tinysound");
-				audioSection.add("file", currentBeep.name());
-				audioSection.add("volume", SettingsWindow.instance.volumeSlider.valueProperty().getValue() / 100.0);
+				audioSection.put("engine", SettingsWindow.instance.javaxAudioEngine.isSelected() ? "java" : "tinysound");
+				audioSection.put("file", currentBeep.name());
+				audioSection.put("volume", SettingsWindow.instance.volumeSlider.valueProperty().getValue() / 100.0);
+				audioSection.put("mode", SettingsWindow.instance.choiceBox.getValue());
 				Profile.Section inputSection = ini.add("Input");
-				inputSection.add("start1", SettingsWindow.instance.startInputField1.getKeyCode());
-				inputSection.add("start2", SettingsWindow.instance.startInputField2.getKeyCode());
-				inputSection.add("reset1", SettingsWindow.instance.resetInputField1.getKeyCode());
-				inputSection.add("reset2", SettingsWindow.instance.resetInputField2.getKeyCode());
-				inputSection.add("up1", SettingsWindow.instance.upInputField1.getKeyCode());
-				inputSection.add("up2", SettingsWindow.instance.upInputField2.getKeyCode());
-				inputSection.add("down1", SettingsWindow.instance.downInputField1.getKeyCode());
-				inputSection.add("down2", SettingsWindow.instance.downInputField2.getKeyCode());
-				inputSection.add("start1Name", SettingsWindow.instance.startInputField1.getParentField().getText());
-				inputSection.add("start2Name", SettingsWindow.instance.startInputField2.getParentField().getText());
-				inputSection.add("reset1Name", SettingsWindow.instance.resetInputField1.getParentField().getText());
-				inputSection.add("reset2Name", SettingsWindow.instance.resetInputField2.getParentField().getText());
-				inputSection.add("up1Name", SettingsWindow.instance.upInputField1.getParentField().getText());
-				inputSection.add("up2Name", SettingsWindow.instance.upInputField2.getParentField().getText());
-				inputSection.add("down1Name", SettingsWindow.instance.downInputField1.getParentField().getText());
-				inputSection.add("down2Name", SettingsWindow.instance.downInputField2.getParentField().getText());
-				inputSection.add("globalStartReset", SettingsWindow.instance.globalStartReset.isSelected());
-				inputSection.add("globalUpDown", SettingsWindow.instance.globalUpDown.isSelected());
+				inputSection.put("start1", SettingsWindow.instance.startInputField1.getKeyCode());
+				inputSection.put("start2", SettingsWindow.instance.startInputField2.getKeyCode());
+				inputSection.put("reset1", SettingsWindow.instance.resetInputField1.getKeyCode());
+				inputSection.put("reset2", SettingsWindow.instance.resetInputField2.getKeyCode());
+				inputSection.put("up1", SettingsWindow.instance.upInputField1.getKeyCode());
+				inputSection.put("up2", SettingsWindow.instance.upInputField2.getKeyCode());
+				inputSection.put("down1", SettingsWindow.instance.downInputField1.getKeyCode());
+				inputSection.put("down2", SettingsWindow.instance.downInputField2.getKeyCode());
+				inputSection.put("start1Name", SettingsWindow.instance.startInputField1.getParentField().getText());
+				inputSection.put("start2Name", SettingsWindow.instance.startInputField2.getParentField().getText());
+				inputSection.put("reset1Name", SettingsWindow.instance.resetInputField1.getParentField().getText());
+				inputSection.put("reset2Name", SettingsWindow.instance.resetInputField2.getParentField().getText());
+				inputSection.put("up1Name", SettingsWindow.instance.upInputField1.getParentField().getText());
+				inputSection.put("up2Name", SettingsWindow.instance.upInputField2.getParentField().getText());
+				inputSection.put("down1Name", SettingsWindow.instance.downInputField1.getParentField().getText());
+				inputSection.put("down2Name", SettingsWindow.instance.downInputField2.getParentField().getText());
+				inputSection.put("globalStartReset", SettingsWindow.instance.globalStartReset.isSelected());
+				inputSection.put("globalUpDown", SettingsWindow.instance.globalUpDown.isSelected());
 				ini.store(settingsFile);
 			} catch(IOException e1) {
 				e1.printStackTrace();
@@ -83,7 +94,6 @@ public class FlowTimer extends Application {
 		// load rest of the settings file
 		(audioEngine instanceof JavaXAudioEngine ? SettingsWindow.instance.javaxAudioEngine : SettingsWindow.instance.tinySoundAudioEngine).setSelected(true);
 		currentBeep = BeepSound.fromString(ini.get("Audio", "file"));
-		audioEngine.setVolume(0);
 		if(currentBeep == BeepSound.BEEP) {
 			SettingsWindow.instance.beepAudioFile.setSelected(true);
 		} else if(currentBeep == BeepSound.DING) {
@@ -93,8 +103,6 @@ public class FlowTimer extends Application {
 		} else {
 			SettingsWindow.instance.popAudioFile.setSelected(true);
 		}
-		SettingsWindow.instance.volumeSlider.setValue(Double.valueOf(String.valueOf(ini.get("Audio", "volume"))) * 100.0);
-		audioEngine.setVolume(Float.valueOf(String.valueOf(ini.get("Audio", "volume"))));
 		SettingsWindow.instance.startInputField1.set(ini.get("Input", "start1Name"), Integer.valueOf(String.valueOf(ini.get("Input", "start1"))));
 		SettingsWindow.instance.startInputField2.set(ini.get("Input", "start2Name"), Integer.valueOf(String.valueOf(ini.get("Input", "start2"))));
 		SettingsWindow.instance.resetInputField1.set(ini.get("Input", "reset1Name"), Integer.valueOf(String.valueOf(ini.get("Input", "reset1"))));
@@ -105,6 +113,8 @@ public class FlowTimer extends Application {
 		SettingsWindow.instance.downInputField2.set(ini.get("Input", "down2Name"), Integer.valueOf(String.valueOf(ini.get("Input", "down2"))));
 		SettingsWindow.instance.globalStartReset.setSelected(Boolean.valueOf(String.valueOf(ini.get("Input", "globalStartReset"))));
 		SettingsWindow.instance.globalUpDown.setSelected(Boolean.valueOf(String.valueOf(ini.get("Input", "globalUpDown"))));
+		SettingsWindow.instance.volumeSlider.setValue(Double.valueOf(String.valueOf(ini.get("Audio", "volume"))) * 100.0);
+		SettingsWindow.instance.choiceBox.setValue(mode);
 		SettingsWindow.instance.setUpListeners();
 	}
 	
@@ -123,6 +133,7 @@ public class FlowTimer extends Application {
 			audioSection.add("engine", "tinysound");
 			audioSection.add("file", "beep");
 			audioSection.add("volume", 1.0f);
+			audioSection.add("mode", "Audio");
 			Profile.Section inputSection = ini.add("Input");
 			inputSection.add("start1", -1);
 			inputSection.add("start2", -1);

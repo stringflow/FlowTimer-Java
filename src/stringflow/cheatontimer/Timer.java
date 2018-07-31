@@ -2,6 +2,7 @@ package stringflow.cheatontimer;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 
 import java.util.Arrays;
 
@@ -16,31 +17,42 @@ public class Timer {
 	public static long maxOffset;
 	public static long cutoff;
 	public static long elapsedTime;
+	public static boolean visualCue;
 	
 	private static AnimationTimer animation;
 	
 	static {
 		animation = new AnimationTimer() {
-			@Override
 			public void handle(long now) {
-				FixedOffsetTab.instance.setTimerLabel((maxOffset - elapsedTime) / 1000000L);
+				long time = (maxOffset - elapsedTime) / 1000000L;
+				if(time < 0) {
+					time = 0;
+				}
+				FixedOffsetTab.instance.setTimerLabel(time);
+				FixedOffsetTab.instance.visualCueRect.setFill(visualCue ? Color.BLACK : Color.TRANSPARENT);
 			}
 		};
 	}
 	
-	public static void calcCurrentTime(TimerEntry entry, boolean visualCue) {
+	public static void calcCurrentTime(TimerEntry entry) {
 		int numBeeps = entry.getOffsets().length * entry.getNumBeeps();
 		maxOffset = Arrays.stream(entry.getOffsets()).max().getAsLong() * 1000000;
 		cutoff = entry.getInterval() * 1000000;
 		beeps = new long[numBeeps];
 		visualCues = new long[numBeeps * 2];
+		Arrays.fill(beeps, (long)Math.pow(2, 63));
+		Arrays.fill(visualCues, (long)Math.pow(2, 63));
 		long visualDurationNS = visualDuration * 1000000;
 		int counter = 0;
 		for(int offset = 0; offset < entry.getOffsets().length; offset++) {
 			for(int i = 0; i < entry.getNumBeeps(); i++) {
-				beeps[counter] = (entry.getOffsets()[offset] - (entry.getInterval() * entry.getNumBeeps()) + (entry.getInterval() * (i + 1))) * 1000000;
-				visualCues[counter * 2 + 0] = beeps[counter];
-				visualCues[counter * 2 + 1] = visualCues[counter * 2 + 0] + visualDurationNS;
+				if(FlowTimer.audioCue) {
+					beeps[counter] = (entry.getOffsets()[offset] - (entry.getInterval() * entry.getNumBeeps()) + (entry.getInterval() * (i + 1))) * 1000000;
+				}
+				if(FlowTimer.visualCue) {
+					visualCues[counter * 2 + 0] = (entry.getOffsets()[offset] - (entry.getInterval() * entry.getNumBeeps()) + (entry.getInterval() * (i + 1))) * 1000000;
+					visualCues[counter * 2 + 1] = visualCues[counter * 2 + 0] + visualDurationNS;
+				}
 				counter++;
 			}
 		}
@@ -71,6 +83,7 @@ public class Timer {
 		
 		public void run() {
 			int beepIndex = 0;
+			int visualCueIndex = 0;
 			long startTime = System.nanoTime();
 			isTimerRunning = true;
 			isRunning = true;
@@ -80,10 +93,14 @@ public class Timer {
 				if(elapsedTime >= beeps[beepIndex]) {
 					FlowTimer.currentBeep.play();
 					beepIndex++;
-					if(beepIndex == beeps.length) {
-						finish();
-						return;
-					}
+				}
+				if(elapsedTime >= visualCues[visualCueIndex]) {
+					visualCue = !visualCue;
+					visualCueIndex++;
+				}
+				if(elapsedTime >= maxOffset) {
+					finish();
+					return;
 				}
 				if(elapsedTime < beeps[beepIndex] - cutoff) {
 					try {
@@ -110,7 +127,11 @@ public class Timer {
 		
 		public void run() {
 			try {
-				Thread.sleep(32);
+				if(FlowTimer.visualCue) {
+					Thread.sleep(visualDuration);
+					visualCue = !visualCue;
+				}
+				Thread.sleep(34);
 				animation.stop();
 				Platform.runLater(() -> {
 					FixedOffsetTab.instance.setTimerLabel(0);

@@ -8,13 +8,14 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="285.0" maxWidth="430.0" minHeight="285.0" minWidth="430.0" prefHeight="285.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stringflow.cheatontimer.FixedOffsetTab">
+<VBox maxHeight="345.0" maxWidth="430.0" minHeight="345.0" minWidth="430.0" prefHeight="345.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stringflow.cheatontimer.FixedOffsetTab">
   <children>
-      <AnchorPane fx:id="layout" maxHeight="285.0" maxWidth="430.0" minHeight="285.0" minWidth="430.0" prefHeight="285.0" prefWidth="430.0" VBox.vgrow="ALWAYS">
+      <AnchorPane fx:id="layout" maxHeight="345.0" maxWidth="430.0" minHeight="345.0" minWidth="430.0" prefHeight="345.0" prefWidth="430.0" VBox.vgrow="ALWAYS">
          <children>
-            <TabPane fx:id="tabPane" focusTraversable="false" maxHeight="285.0" maxWidth="430.0" minHeight="285.0" minWidth="430.0" prefHeight="285.0" prefWidth="430.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tabPane" focusTraversable="false" maxHeight="345.0" maxWidth="430.0" minHeight="345.0" minWidth="430.0" prefHeight="345.0" prefWidth="430.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="Fixed Offset">
                      <content>
@@ -23,16 +24,21 @@
                      <content>
                         <AnchorPane fx:id="layout" maxWidth="430.0" minWidth="430.0" prefWidth="430.0">
                            <children>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <Rectangle fx:id="visualCueRect" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="55.0" stroke="#ffffff00" strokeType="INSIDE" width="120.0" />
+                                 </children>
+                              </AnchorPane>
                               <Label layoutX="206.0" layoutY="16.0" />
-                              <ImageView fitHeight="97.0" fitWidth="121.0" layoutX="11.0" layoutY="159.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../image/vohiyo.png" />
-                                 </image>
-                              </ImageView>
                               <Label layoutX="145.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Name" />
                               <Label layoutX="205.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Offset" />
                               <Label layoutX="265.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Interval" />
                               <Label layoutX="325.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Beeps" />
+                              <ImageView fitHeight="90.0" fitWidth="123.0" layoutX="2.0" layoutY="211.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../image/nidos.png" />
+                                 </image>
+                              </ImageView>
                            </children>
                         </AnchorPane>
                      </content>
@@ -52,6 +58,8 @@
                   <Font size="11.0" />
                </font>
             </Button>
+            <Button fx:id="settingsButton1" focusTraversable="false" layoutX="10.0" layoutY="175.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onSettingsButtonPress" prefHeight="25.0" prefWidth="100.0" text="Import Timers" />
+            <Button fx:id="settingsButton11" focusTraversable="false" layoutX="10.0" layoutY="205.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onSettingsButtonPress" prefHeight="25.0" prefWidth="100.0" text="Export Timers" />
          </children>
       </AnchorPane>
   </children>

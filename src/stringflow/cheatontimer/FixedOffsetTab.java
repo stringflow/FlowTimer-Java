@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -27,6 +28,7 @@ public class FixedOffsetTab {
 	public Button resetButton;
 	public Button settingsButton;
 	public Label timerLabel;
+	public Rectangle visualCueRect;
 	
 	private LinkedList<TimerEntry> timers = new LinkedList<>();
 	private TimerEntry activeTimer;
@@ -85,13 +87,6 @@ public class FixedOffsetTab {
 	}
 	
 	public void setTimerLabel(long time) {
-		if(time < 0) {
-			try {
-				throw new IOException();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
 		timerLabel.setText(String.format(Locale.ENGLISH, "%.3f", (double)time / 1000.0));
 	}
 	
@@ -105,7 +100,7 @@ public class FixedOffsetTab {
 	
 	public void setActiveTimer(TimerEntry timer) {
 		if(timer.isAllDataValid()) {
-			Timer.calcCurrentTime(timer, true);
+			Timer.calcCurrentTime(timer);
 			setTimerLabel(timer.getOffsets()[0]);
 			activeTimer = timer;
 		} else {
