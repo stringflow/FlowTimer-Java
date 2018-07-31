@@ -16,7 +16,6 @@ import stringflow.cheatontimer.audio.tinySound.TinySoundAudioEngine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +47,7 @@ public class FlowTimer extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/layout/mainFrame.fxml")), 430, 335));
 		primaryStage.show();
-		primaryStage.focusedProperty().addListener((arg0, arg1, arg2) -> { if(arg2) FixedOffsetTab.instance.setActiveTimer(FixedOffsetTab.instance.getSelectedTimer());});
+		primaryStage.focusedProperty().addListener((arg0, arg1, arg2) -> { if(arg2 && !Timer.isTimerRunning) FixedOffsetTab.instance.setActiveTimer(FixedOffsetTab.instance.getSelectedTimer());});
 		primaryStage.setOnCloseRequest(e -> {
 			audioEngine.dispose();
 			try {
