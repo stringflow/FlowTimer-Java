@@ -29,6 +29,10 @@
                                     <Image url="@../image/vohiyo.png" />
                                  </image>
                               </ImageView>
+                              <Label layoutX="145.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Name" />
+                              <Label layoutX="205.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Offset" />
+                              <Label layoutX="265.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Interval" />
+                              <Label layoutX="325.0" layoutY="13.0" maxWidth="55.0" minHeight="20.0" minWidth="55.0" prefHeight="20.0" prefWidth="55.0" text="Beeps" />
                            </children>
                         </AnchorPane>
                      </content>
