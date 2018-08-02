@@ -24,7 +24,6 @@ public class JavaXAudioFile implements IAudioFile {
 	}
 	
 	public void dispose() {
-		source.close();
 	}
 	
 	public void setVolume(float volume) {
