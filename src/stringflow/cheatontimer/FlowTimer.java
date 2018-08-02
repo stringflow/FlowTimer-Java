@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.ini4j.Config;
+import org.ini4j.Ini;
 import org.ini4j.Profile;
 import org.ini4j.Wini;
 import org.jnativehook.GlobalScreen;
@@ -53,6 +54,9 @@ public class FlowTimer extends Application {
 			try {
 				ini.load(settingsFile);
 				ini.clear();
+				Profile.Section generalSection = ini.add("General");
+				generalSection.put("pin", mainFrame.isAlwaysOnTop());
+				generalSection.put("saveLocation", FixedOffsetTab.instance.saveLocationBuffer);
 				Profile.Section audioSection = ini.add("Audio");
 				audioSection.put("engine", SettingsWindow.instance.javaxAudioEngine.isSelected() ? "java" : "tinysound");
 				audioSection.put("file", currentBeep.name());
@@ -89,6 +93,23 @@ public class FlowTimer extends Application {
 		settingsWindow.setResizable(false);
 		settingsWindow.setScene(new Scene(FXMLLoader.load(getClass().getResource("/layout/settingsWindow.fxml")), 265, 160));
 		settingsWindow.initModality(Modality.APPLICATION_MODAL);
+		
+		
+		// Check for 1.4.1 settings
+		if(ini.get("General") == null) {
+			ini.add("General");
+		}
+		Profile.Section generalSection = ((Profile.Section) ini.get("General"));
+		if(!generalSection.containsKey("pin")) {
+			generalSection.add("pin", false);
+		}
+		if(!generalSection.containsKey("saveLocation")) {
+			generalSection.add("saveLocation", System.getProperty("user.home") + "\\Desktop");
+		}
+		ini.store();
+	
+		FixedOffsetTab.instance.setPin(Boolean.valueOf(String.valueOf(generalSection.get("pin"))));
+		FixedOffsetTab.instance.saveLocationBuffer = String.valueOf(generalSection.get("saveLocation"));
 		
 		// load rest of the settings file
 		(audioEngine instanceof JavaXAudioEngine ? SettingsWindow.instance.javaxAudioEngine : SettingsWindow.instance.tinySoundAudioEngine).setSelected(true);

@@ -1,6 +1,5 @@
 package stringflow.cheatontimer;
 
-import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -28,14 +27,14 @@ public class Timer {
 	
 	static {
 		animation = new Timeline(new KeyFrame(Duration.millis(1), (ActionEvent e) -> {
+			if(visualCue != lastVisualCue) {
+				FixedOffsetTab.instance.visualCueRect.setFill(visualCue ? Color.BLACK : Color.TRANSPARENT);
+			}
 			long time = (maxOffset - elapsedTime) / 1000000L;
 			if(time < 0) {
 				time = 0;
 			}
 			FixedOffsetTab.instance.setTimerLabel(time);
-			if(visualCue != lastVisualCue) {
-				FixedOffsetTab.instance.visualCueRect.setFill(visualCue ? Color.BLACK : Color.TRANSPARENT);
-			}
 			lastVisualCue = visualCue;
 		}));
 		animation.setCycleCount(Timeline.INDEFINITE);

@@ -60,6 +60,16 @@
             </Button>
             <Button fx:id="importButton" focusTraversable="false" layoutX="10.0" layoutY="175.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onImportButtonPress" prefHeight="25.0" prefWidth="100.0" text="Import Timers" />
             <Button fx:id="exportButton" focusTraversable="false" layoutX="10.0" layoutY="205.0" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#onExportButtonPress" prefHeight="25.0" prefWidth="100.0" text="Export Timers" />
+            <ImageView fx:id="unpinIcon" fitHeight="16.0" fitWidth="16.0" layoutX="408.0" layoutY="31.0" onMouseClicked="#onPinIconClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../image/pin_true.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="pinIcon" fitHeight="16.0" fitWidth="16.0" layoutX="408.0" layoutY="31.0" onMouseClicked="#onPinIconClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../image/pin_false.png" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
   </children>

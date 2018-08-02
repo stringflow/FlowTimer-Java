@@ -5,6 +5,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
@@ -36,6 +37,10 @@ public class FixedOffsetTab {
 	public Button exportButton;
 	public Label timerLabel;
 	public Rectangle visualCueRect;
+	public ImageView pinIcon;
+	public ImageView unpinIcon;
+	
+	public String saveLocationBuffer;
 	
 	private LinkedList<TimerEntry> timers = new LinkedList<>();
 	private TimerEntry activeTimer;
@@ -77,12 +82,29 @@ public class FixedOffsetTab {
 	}
 	
 	@FXML
+	public void onPinIconClicked() {
+		setPin(!FlowTimer.mainFrame.isAlwaysOnTop());
+	}
+	
+	public void setPin(boolean value) {
+		FlowTimer.mainFrame.setAlwaysOnTop(value);
+		if(value) {
+			pinIcon.setVisible(false);
+			unpinIcon.setVisible(true);
+		} else {
+			pinIcon.setVisible(true);
+			unpinIcon.setVisible(false);
+		}
+	}
+	
+	@FXML
 	public void onImportButtonPress() {
 		FileChooser filechooser = new FileChooser();
+		filechooser.setInitialDirectory(new File(saveLocationBuffer));
 		filechooser.setTitle("Import Timers");
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("FTF files", "*.ftf", "*.ctf");
 		filechooser.getExtensionFilters().add(extFilter);
-		Stage stage = (Stage) layout.getScene().getWindow();
+		Stage stage = (Stage)layout.getScene().getWindow();
 		File file = filechooser.showOpenDialog(stage);
 		if(file == null) {
 			return;
@@ -96,14 +118,16 @@ public class FixedOffsetTab {
 			addAllTimers(loadedTimers);
 			timers.get(0).select();
 			AlertBox.showAlert(Alert.AlertType.INFORMATION, "FlowTimer", "Timers successfully imported.");
+			saveLocationBuffer = file.getParent();
 		}
 	}
 	
 	@FXML
 	public void onExportButtonPress() {
 		FileChooser filechooser = new FileChooser();
+		filechooser.setInitialDirectory(new File(saveLocationBuffer));
 		filechooser.setTitle("Export Timers");
-		Stage stage = (Stage) layout.getScene().getWindow();
+		Stage stage = (Stage)layout.getScene().getWindow();
 		File file = filechooser.showSaveDialog(stage);
 		if(file == null) {
 			return;
@@ -113,6 +137,7 @@ public class FixedOffsetTab {
 		}
 		TimerFileUtil.saveTimers(file, timers);
 		AlertBox.showAlert(Alert.AlertType.INFORMATION, "FlowTimer", "Timers successfully exported.");
+		saveLocationBuffer = file.getParent();
 	}
 	
 	public TimerEntry getSelectedTimer() {
