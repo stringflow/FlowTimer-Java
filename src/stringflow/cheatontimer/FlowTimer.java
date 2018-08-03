@@ -39,7 +39,6 @@ public class FlowTimer extends Application {
 		String mode = ini.get("Audio", "mode");
 		audioCue = mode.toLowerCase().contains("audio");
 		visualCue = mode.toLowerCase().contains("visual");
-		audioEngine.setVolume(Float.valueOf(String.valueOf(ini.get("Audio", "volume"))));
 		mainFrame = primaryStage;
 		setupNativeHook();
 		GlobalScreen.registerNativeHook();
@@ -94,7 +93,6 @@ public class FlowTimer extends Application {
 		settingsWindow.setScene(new Scene(FXMLLoader.load(getClass().getResource("/layout/settingsWindow.fxml")), 265, 160));
 		settingsWindow.initModality(Modality.APPLICATION_MODAL);
 		
-		
 		// Check for 1.4.1 settings
 		if(ini.get("General") == null) {
 			ini.add("General");
@@ -123,6 +121,8 @@ public class FlowTimer extends Application {
 		} else {
 			SettingsWindow.instance.popAudioFile.setSelected(true);
 		}
+		audioEngine.setVolume(0);
+		currentBeep.play();
 		SettingsWindow.instance.startInputField1.set(ini.get("Input", "start1Name"), Integer.valueOf(String.valueOf(ini.get("Input", "start1"))));
 		SettingsWindow.instance.startInputField2.set(ini.get("Input", "start2Name"), Integer.valueOf(String.valueOf(ini.get("Input", "start2"))));
 		SettingsWindow.instance.resetInputField1.set(ini.get("Input", "reset1Name"), Integer.valueOf(String.valueOf(ini.get("Input", "reset1"))));
@@ -136,6 +136,7 @@ public class FlowTimer extends Application {
 		SettingsWindow.instance.volumeSlider.setValue(Double.valueOf(String.valueOf(ini.get("Audio", "volume"))) * 100.0);
 		SettingsWindow.instance.choiceBox.setValue(mode);
 		SettingsWindow.instance.setUpListeners();
+		audioEngine.setVolume(Float.valueOf(String.valueOf(ini.get("Audio", "volume"))));
 	}
 	
 	private static Wini loadIniAndSetAudioEngine() throws Exception {

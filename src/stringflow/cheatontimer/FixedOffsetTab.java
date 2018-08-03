@@ -1,17 +1,20 @@
 package stringflow.cheatontimer;
 
+import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import stringflow.cheatontimer.timerFile.TimerFileUtil;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,12 +38,13 @@ public class FixedOffsetTab {
 	public Button settingsButton;
 	public Button importButton;
 	public Button exportButton;
-	public Label timerLabel;
-	public Rectangle visualCueRect;
+	public SwingNode swingNode;
 	public ImageView pinIcon;
 	public ImageView unpinIcon;
 	
 	public String saveLocationBuffer;
+	public JLabel timerLabel;
+	public TimerPanel swingPanel;
 	
 	private LinkedList<TimerEntry> timers = new LinkedList<>();
 	private TimerEntry activeTimer;
@@ -51,6 +55,15 @@ public class FixedOffsetTab {
 	
 	@FXML
 	public void initialize() {
+		swingPanel = new TimerPanel();
+		swingPanel.setBackground(new Color(0xF4F4F4));
+		swingPanel.setLayout(null);
+		swingPanel.setBounds(20, 0, 120, 50);
+		timerLabel = new JLabel("0.000");
+		timerLabel.setFont(new Font("Verdana", 0, 30));
+		timerLabel.setBounds(9, 0, 150, 50);
+		swingPanel.add(timerLabel);
+		swingNode.setContent(swingPanel);
 		addNewTimer("Initial", 2500, 500, 5, false);
 		getTimer(0).select();
 		recalcAddButton();

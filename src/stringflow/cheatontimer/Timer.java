@@ -20,25 +20,6 @@ public class Timer {
 	public static long maxOffset;
 	public static long cutoff;
 	public static long elapsedTime;
-	public static boolean visualCue;
-	public static boolean lastVisualCue;
-	
-	private static Timeline animation;
-	
-	static {
-		animation = new Timeline(new KeyFrame(Duration.millis(1), (ActionEvent e) -> {
-			if(visualCue != lastVisualCue) {
-				FixedOffsetTab.instance.visualCueRect.setFill(visualCue ? Color.BLACK : Color.TRANSPARENT);
-			}
-			long time = (maxOffset - elapsedTime) / 1000000L;
-			if(time < 0) {
-				time = 0;
-			}
-			FixedOffsetTab.instance.setTimerLabel(time);
-			lastVisualCue = visualCue;
-		}));
-		animation.setCycleCount(Timeline.INDEFINITE);
-	}
 	
 	public static void calcCurrentTime(TimerEntry entry) {
 		int numBeeps = entry.getOffsets().length * entry.getNumBeeps();
@@ -71,13 +52,11 @@ public class Timer {
 			currentTimerThread.stop();
 		}
 		new Thread(currentTimerThread = new TimerThread()).start();
-		animation.play();
 		FixedOffsetTab.instance.setElements(true);
 	}
 	
 	public static void reset() {
 		if(isTimerRunning) {
-			animation.stop();
 			currentTimerThread.stop();
 			currentTimerThread.finish();
 		}
@@ -101,9 +80,11 @@ public class Timer {
 					beepIndex++;
 				}
 				if(elapsedTime >= visualCues[visualCueIndex]) {
-					visualCue = !visualCue;
+					FixedOffsetTab.instance.swingPanel.toggleVisualCue();
+					FixedOffsetTab.instance.swingPanel.repaint();
 					visualCueIndex++;
 				}
+				FixedOffsetTab.instance.setTimerLabel((maxOffset - elapsedTime) / 1000000);
 				if(elapsedTime >= maxOffset) {
 					finish();
 					return;
@@ -137,10 +118,10 @@ public class Timer {
 			try {
 				if(FlowTimer.visualCue) {
 					Thread.sleep(visualDuration);
-					visualCue = !visualCue;
+					FixedOffsetTab.instance.swingPanel.setVisualCue(false);
+					FixedOffsetTab.instance.swingPanel.repaint();
 				}
 				Thread.sleep(34);
-				animation.stop();
 				Platform.runLater(() -> {
 					FixedOffsetTab.instance.setTimerLabel(0);
 					FixedOffsetTab.instance.setActiveTimer(FixedOffsetTab.instance.getSelectedTimer());
