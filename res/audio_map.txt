@@ -1,0 +1,6 @@
+ping1 /audio/ping1.wav
+clack /audio/clack.wav
+ping2 /audio/ping2.wav
+click1 /audio/click1.wav
+click2 /audio/click2.wav
+snare /audio/snare.wav

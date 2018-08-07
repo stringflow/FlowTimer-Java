@@ -1,4 +1,4 @@
-package stringflow.cheatontimer;
+package stringflow.flowtimer;
 
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Region;

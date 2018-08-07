@@ -1,8 +1,8 @@
-package stringflow.cheatontimer.audio.tinySound;
+package stringflow.flowtimer.audio.tinySound;
 
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
-import stringflow.cheatontimer.audio.IAudioFile;
+import stringflow.flowtimer.audio.IAudioFile;
 
 public class TinySoundAudioFile implements IAudioFile {
 	

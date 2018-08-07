@@ -1,4 +1,4 @@
-package stringflow.cheatontimer;
+package stringflow.flowtimer;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;

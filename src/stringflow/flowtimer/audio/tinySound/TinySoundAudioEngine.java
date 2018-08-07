@@ -1,8 +1,8 @@
-package stringflow.cheatontimer.audio.tinySound;
+package stringflow.flowtimer.audio.tinySound;
 
 import kuusisto.tinysound.TinySound;
-import stringflow.cheatontimer.audio.AudioEngine;
-import stringflow.cheatontimer.audio.IAudioFile;
+import stringflow.flowtimer.audio.AudioEngine;
+import stringflow.flowtimer.audio.IAudioFile;
 
 public class TinySoundAudioEngine extends AudioEngine {
 	

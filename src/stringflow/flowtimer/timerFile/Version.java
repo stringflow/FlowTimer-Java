@@ -1,4 +1,4 @@
-package stringflow.cheatontimer.timerFile;
+package stringflow.flowtimer.timerFile;
 
 public class Version {
 	

@@ -1,8 +1,8 @@
-package stringflow.cheatontimer.timerFile;
+package stringflow.flowtimer.timerFile;
 
 import javafx.scene.control.Alert;
-import stringflow.cheatontimer.AlertBox;
-import stringflow.cheatontimer.TimerEntry;
+import stringflow.flowtimer.AlertBox;
+import stringflow.flowtimer.TimerEntry;
 
 import java.io.*;
 import java.util.ArrayList;

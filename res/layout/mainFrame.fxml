@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="345.0" maxWidth="430.0" minHeight="345.0" minWidth="430.0" prefHeight="345.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stringflow.cheatontimer.FixedOffsetTab">
+<VBox maxHeight="345.0" maxWidth="430.0" minHeight="345.0" minWidth="430.0" prefHeight="345.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stringflow.flowtimer.FixedOffsetTab">
   <children>
       <AnchorPane fx:id="layout" maxHeight="345.0" maxWidth="430.0" minHeight="345.0" minWidth="430.0" prefHeight="345.0" prefWidth="430.0" VBox.vgrow="ALWAYS">
          <children>

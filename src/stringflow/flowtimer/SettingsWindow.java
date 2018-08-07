@@ -1,11 +1,11 @@
-package stringflow.cheatontimer;
+package stringflow.flowtimer;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import stringflow.cheatontimer.audio.BeepSound;
+import stringflow.flowtimer.audio.BeepSound;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +15,6 @@ public class SettingsWindow {
 	public static SettingsWindow instance = null;
 	
 	public ToggleGroup audioEngineGroup;
-	public ToggleGroup audioFileGroup;
 	
 	public InputField startInputField1;
 	public InputField startInputField2;
@@ -41,10 +40,7 @@ public class SettingsWindow {
 	public CheckBox globalUpDown;
 	public RadioButton javaxAudioEngine;
 	public RadioButton tinySoundAudioEngine;
-	public RadioButton beepAudioFile;
-	public RadioButton popAudioFile;
-	public RadioButton dingAudioFile;
-	public RadioButton tickAudioFile;
+	public ChoiceBox<String> audioFile;
 	public Slider volumeSlider;
 	public ChoiceBox<String> choiceBox;
 	
@@ -61,14 +57,12 @@ public class SettingsWindow {
 		choiceBox.valueProperty().setValue(choiceBox.getItems().get(0));
 		choiceBox.valueProperty().addListener(new VisualChangeListener());
 		audioEngineGroup = new ToggleGroup();
-		audioFileGroup = new ToggleGroup();
 		javaxAudioEngine.setToggleGroup(audioEngineGroup);
 		tinySoundAudioEngine.setToggleGroup(audioEngineGroup);
-		beepAudioFile.setToggleGroup(audioFileGroup);
-		popAudioFile.setToggleGroup(audioFileGroup);
-		dingAudioFile.setToggleGroup(audioFileGroup);
-		tickAudioFile.setToggleGroup(audioFileGroup);
 		inputFields = Arrays.asList(startInputField1 = new InputField(startInputField1Internal), startInputField2 = new InputField(startInputField2Internal), resetInputField1 = new InputField(resetInputField1Internal), resetInputField2 = new InputField(resetInputField2Internal), upInputField1 = new InputField(upInputField1Internal), upInputField2 = new InputField(upInputField2Internal), downInputField1 = new InputField(downInputField1Internal), downInputField2 = new InputField(downInputField2Internal));
+		for(BeepSound beepSound : BeepSound.loadedBeepSounds) {
+			audioFile.getItems().add(beepSound.getName());
+		}
 		for(InputField inputField : inputFields) {
 			inputField.getParentField().addEventFilter(KeyEvent.KEY_PRESSED, e -> inputField.getParentField().setText(e.getCode().getName()));
 			inputField.getParentField().addEventFilter(KeyEvent.KEY_TYPED, e -> e.consume());
@@ -85,10 +79,7 @@ public class SettingsWindow {
 	}
 	
 	public void setUpListeners() {
-		beepAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.BEEP));
-		popAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.POP));
-		dingAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.DING));
-		tickAudioFile.selectedProperty().addListener(new AudioFileListener(BeepSound.TICK));
+		audioFile.valueProperty().addListener(new AudioFileListener());
 		javaxAudioEngine.selectedProperty().addListener(new AudioEngineListener());
 		tinySoundAudioEngine.selectedProperty().addListener(new AudioEngineListener());
 	}
@@ -140,19 +131,12 @@ public class SettingsWindow {
 		}
 	}
 	
-	private class AudioFileListener implements ChangeListener<Boolean> {
+	private class AudioFileListener implements ChangeListener<String> {
 		
-		private BeepSound sound;
-		
-		public AudioFileListener(BeepSound sound) {
-			this.sound = sound;
-		}
-		
-		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-			if(newValue) {
-				FlowTimer.currentBeep = sound;
-				FlowTimer.currentBeep.play();
-			}
+		public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+			BeepSound sound = BeepSound.fromString(newValue);
+			FlowTimer.currentBeep = sound;
+			FlowTimer.currentBeep.play();
 		}
 	}
 	

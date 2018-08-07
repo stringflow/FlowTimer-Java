@@ -1,6 +1,6 @@
-package stringflow.cheatontimer.audio.javax;
+package stringflow.flowtimer.audio.javax;
 
-import stringflow.cheatontimer.audio.IAudioFile;
+import stringflow.flowtimer.audio.IAudioFile;
 
 import javax.sound.sampled.*;
 

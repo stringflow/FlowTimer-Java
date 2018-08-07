@@ -1,4 +1,4 @@
-package stringflow.cheatontimer;
+package stringflow.flowtimer;
 
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
@@ -7,11 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import stringflow.cheatontimer.timerFile.TimerFileUtil;
+import stringflow.flowtimer.timerFile.TimerFileUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -117,8 +114,7 @@ public class FixedOffsetTab {
 		filechooser.setTitle("Import Timers");
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("FTF files", "*.ftf", "*.ctf");
 		filechooser.getExtensionFilters().add(extFilter);
-		Stage stage = (Stage)layout.getScene().getWindow();
-		File file = filechooser.showOpenDialog(stage);
+		File file = filechooser.showOpenDialog(layout.getScene().getWindow());
 		if(file == null) {
 			return;
 		}
@@ -140,8 +136,7 @@ public class FixedOffsetTab {
 		FileChooser filechooser = new FileChooser();
 		filechooser.setInitialDirectory(new File(saveLocationBuffer));
 		filechooser.setTitle("Export Timers");
-		Stage stage = (Stage)layout.getScene().getWindow();
-		File file = filechooser.showSaveDialog(stage);
+		File file = filechooser.showSaveDialog(layout.getScene().getWindow());
 		if(file == null) {
 			return;
 		}

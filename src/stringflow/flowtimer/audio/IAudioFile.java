@@ -1,4 +1,4 @@
-package stringflow.cheatontimer.audio;
+package stringflow.flowtimer.audio;
 
 public interface IAudioFile {
 	

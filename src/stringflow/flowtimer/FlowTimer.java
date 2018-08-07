@@ -1,4 +1,4 @@
-package stringflow.cheatontimer;
+package stringflow.flowtimer;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -6,14 +6,13 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.ini4j.Config;
-import org.ini4j.Ini;
 import org.ini4j.Profile;
 import org.ini4j.Wini;
 import org.jnativehook.GlobalScreen;
-import stringflow.cheatontimer.audio.AudioEngine;
-import stringflow.cheatontimer.audio.BeepSound;
-import stringflow.cheatontimer.audio.javax.JavaXAudioEngine;
-import stringflow.cheatontimer.audio.tinySound.TinySoundAudioEngine;
+import stringflow.flowtimer.audio.AudioEngine;
+import stringflow.flowtimer.audio.BeepSound;
+import stringflow.flowtimer.audio.javax.JavaXAudioEngine;
+import stringflow.flowtimer.audio.tinySound.TinySoundAudioEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +39,7 @@ public class FlowTimer extends Application {
 		audioCue = mode.toLowerCase().contains("audio");
 		visualCue = mode.toLowerCase().contains("visual");
 		mainFrame = primaryStage;
+		BeepSound.registerBeepSounds();
 		setupNativeHook();
 		GlobalScreen.registerNativeHook();
 		GlobalScreen.addNativeKeyListener(new GlobalScreenListener());
@@ -58,7 +58,7 @@ public class FlowTimer extends Application {
 				generalSection.put("saveLocation", FixedOffsetTab.instance.saveLocationBuffer);
 				Profile.Section audioSection = ini.add("Audio");
 				audioSection.put("engine", SettingsWindow.instance.javaxAudioEngine.isSelected() ? "java" : "tinysound");
-				audioSection.put("file", currentBeep.name());
+				audioSection.put("file", currentBeep.getName());
 				audioSection.put("volume", SettingsWindow.instance.volumeSlider.valueProperty().getValue() / 100.0);
 				audioSection.put("mode", SettingsWindow.instance.choiceBox.getValue());
 				Profile.Section inputSection = ini.add("Input");
@@ -112,14 +112,11 @@ public class FlowTimer extends Application {
 		// load rest of the settings file
 		(audioEngine instanceof JavaXAudioEngine ? SettingsWindow.instance.javaxAudioEngine : SettingsWindow.instance.tinySoundAudioEngine).setSelected(true);
 		currentBeep = BeepSound.fromString(ini.get("Audio", "file"));
-		if(currentBeep == BeepSound.BEEP) {
-			SettingsWindow.instance.beepAudioFile.setSelected(true);
-		} else if(currentBeep == BeepSound.DING) {
-			SettingsWindow.instance.dingAudioFile.setSelected(true);
-		} else if(currentBeep == BeepSound.TICK) {
-			SettingsWindow.instance.tickAudioFile.setSelected(true);
+		if(currentBeep == null) {
+			currentBeep = BeepSound.loadedBeepSounds.get(0);
+			SettingsWindow.instance.audioFile.setValue(currentBeep.getName());
 		} else {
-			SettingsWindow.instance.popAudioFile.setSelected(true);
+			SettingsWindow.instance.audioFile.setValue(ini.get("Audio", "file"));
 		}
 		audioEngine.setVolume(0);
 		currentBeep.play();
@@ -152,7 +149,7 @@ public class FlowTimer extends Application {
 			ini.setConfig(config);
 			Profile.Section audioSection = ini.add("Audio");
 			audioSection.add("engine", "tinysound");
-			audioSection.add("file", "beep");
+			audioSection.add("file", "ping1");
 			audioSection.add("volume", 1.0f);
 			audioSection.add("mode", "Audio");
 			Profile.Section inputSection = ini.add("Input");

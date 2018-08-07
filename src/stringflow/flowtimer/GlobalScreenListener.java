@@ -1,4 +1,4 @@
-package stringflow.cheatontimer;
+package stringflow.flowtimer;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
