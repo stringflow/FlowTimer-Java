@@ -158,10 +158,10 @@ public class TimerEntry {
 		if(!offsetField.getText().matches("^\\d+(\\/\\d+)*$")) {
 			return false;
 		}
-		if(!intervalField.getText().matches("\\d+")) {
+		if(!intervalField.getText().matches("^0*[1-9]\\d*$")) {
 			return false;
 		}
-		if(!numBeepsField.getText().matches("\\d+")) {
+		if(!numBeepsField.getText().matches("^0*[1-9]\\d*$")) {
 			return false;
 		}
 		String offsets[] = offsetField.getText().split("/");
