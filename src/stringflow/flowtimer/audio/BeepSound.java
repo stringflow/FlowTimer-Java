@@ -1,35 +1,20 @@
 package stringflow.flowtimer.audio;
 
 import stringflow.flowtimer.FlowTimer;
+import stringflow.resourceloading.TextFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.LinkedList;
-import java.util.List;
 
 public class BeepSound {
 	
 	public static LinkedList<BeepSound> loadedBeepSounds = new LinkedList<>();
 	
 	public static void registerBeepSounds() {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(BeepSound.class.getResourceAsStream("/audio_map.txt")));
-			StringBuffer sb = new StringBuffer();
-			String l;
-			while((l = reader.readLine()) != null) {
-				sb.append(l).append("\n");
-			}
-			String content[] = sb.toString().split("\n");
-			for(String line : content) {
-				String splitArray[] = line.split(" ");
-				loadedBeepSounds.add(new BeepSound(splitArray[0], splitArray[1]));
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		TextFile textFile = new TextFile("/audio_map.txt", "r");
+		textFile.visitAll((line, lineNumber) -> {
+			String splitArray[] = line.split(" ");
+			loadedBeepSounds.add(new BeepSound(splitArray[0], splitArray[1]));
+		});
 	}
 	
 	public static BeepSound fromString(String input) {
