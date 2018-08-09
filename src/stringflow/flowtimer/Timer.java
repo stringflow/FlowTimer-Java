@@ -84,8 +84,8 @@ public class Timer {
 					finish();
 					return;
 				}
-				boolean audioCutoffMet = FlowTimer.audioCue && elapsedTime > beeps[beepIndex] - cutoff;
-				boolean visualCutoffMet = FlowTimer.visualCue && elapsedTime > visualCues[visualCueIndex] - cutoff;
+				boolean audioCutoffMet = FlowTimer.audioCue && elapsedTime < beeps[beepIndex] - cutoff;
+				boolean visualCutoffMet = FlowTimer.visualCue && elapsedTime < visualCues[visualCueIndex] - cutoff;
 				if(audioCutoffMet || visualCutoffMet) {
 					try {
 						Thread.sleep(5);
