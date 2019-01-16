@@ -12,7 +12,7 @@ import javax.swing.SwingConstants;
 public class SettingsWindow {
 
 	public static final int WIDTH = 290;
-	public static final int HEIGHT = 235;
+	public static final int HEIGHT = 260;
 	public static final String TITLE = "FlowTimer 1.5 - Settings";
 
 	private static JDialog dialog;
@@ -26,6 +26,8 @@ public class SettingsWindow {
 	private static JCheckBox visualCue;
 	private static JLabel beepSoundLabel;
 	private static JComboBox<String> beepSound;
+	private static JLabel keyTriggerLabel;
+	private static JComboBox<String> keyTrigger;
 
 	public static void create(JFrame parent) {
 		dialog = new JDialog(parent, TITLE, ModalityType.APPLICATION_MODAL);
@@ -45,12 +47,12 @@ public class SettingsWindow {
 		globalUpDown = new JCheckBox("Global Up/Down");
 		visualCue = new JCheckBox("Visual Cue");
 
-		globalStartReset.setBounds(5, 130, 120, 20);
-		globalUpDown.setBounds(5, 150, 120, 20);
-		visualCue.setBounds(5, 170, 120, 20);
+		globalStartReset.setBounds(5, 155, 120, 20);
+		globalUpDown.setBounds(5, 175, 120, 20);
+		visualCue.setBounds(5, 195, 120, 20);
 
 		beepSound = new JComboBox<>();
-		beepSound.setBounds(46, 106, 78, 21);
+		beepSound.setBounds(46, 106, 85, 21);
 		((JLabel)beepSound.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 		FlowTimer.BEEP_MAP.keySet().forEach(beepSound::addItem);
 		beepSound.addActionListener(e -> {
@@ -62,12 +64,23 @@ public class SettingsWindow {
 		
 		beepSoundLabel = new JLabel("Beep:");
 		beepSoundLabel.setBounds(10, 105, 50, 20);
+		
+		keyTrigger = new JComboBox<>();
+		keyTrigger.setBounds(46, 131, 85, 21);
+		((JLabel)keyTrigger.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+		keyTrigger.addItem("On Press");
+		keyTrigger.addItem("On Release");
+		
+		keyTriggerLabel = new JLabel("Key:");
+		keyTriggerLabel.setBounds(10, 130, 50, 20);
 
 		dialog.add(globalStartReset);
 		dialog.add(globalUpDown);
 		dialog.add(visualCue);
 		dialog.add(beepSoundLabel);
 		dialog.add(beepSound);
+		dialog.add(keyTriggerLabel);
+		dialog.add(keyTrigger);
 	}
 
 	public static void show() {
@@ -104,6 +117,10 @@ public class SettingsWindow {
 
 	public static JComboBox<String> getBeepSound() {
 		return beepSound;
+	}
+
+	public static JComboBox<String> getKeyTrigger() {
+		return keyTrigger;
 	}
 
 	public static boolean isVisible() {

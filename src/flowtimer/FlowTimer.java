@@ -38,7 +38,7 @@ import flowtimer.parsing.json.JSONArray;
 import flowtimer.parsing.json.JSONObject;
 import flowtimer.parsing.json.JSONValue;
 
-public class FlowTimer {
+public class FlowTimer{
 
 	public static final int WIDTH = 451;
 	public static final int HEIGHT = 262;
@@ -80,12 +80,12 @@ public class FlowTimer {
 	private static ColumnLabel offsetLabel;
 	private static ColumnLabel intervalLabel;
 	private static ColumnLabel numBeepsLabel;
-	
+
 	private static JLabel pinLabel;
 
 	private static String fileSystemLocationBuffer;
 	private static String timerLocationBuffer;
-	
+
 	static {
 		AudioEngine.init();
 		BEEP_MAP.put("ping1", AudioEngine.createSource("/audio/ping1.wav"));
@@ -118,7 +118,7 @@ public class FlowTimer {
 			HashMap<String, String> defaultMap = new HashMap<>();
 			defaultMap.put("fileSystemLocationBuffer", System.getProperty("user.home") + "\\Desktop");
 			defaultMap.put("timerLocationBuffer", "null");
-			
+
 			defaultMap.put("primaryStartKey", "-1");
 			defaultMap.put("primaryStartKeyName", "Unset");
 			defaultMap.put("primaryResetKey", "-1");
@@ -127,7 +127,7 @@ public class FlowTimer {
 			defaultMap.put("primaryUpKeyName", "Up");
 			defaultMap.put("primaryDownKey", "57424");
 			defaultMap.put("primaryDownKeyName", "Down");
-			
+
 			defaultMap.put("secondaryStartKey", "-1");
 			defaultMap.put("secondaryStartKeyName", "Unset");
 			defaultMap.put("secondaryResetKey", "-1");
@@ -136,14 +136,16 @@ public class FlowTimer {
 			defaultMap.put("secondaryUpKeyName", "Unset");
 			defaultMap.put("secondaryDownKey", "-1");
 			defaultMap.put("secondaryDownKeyName", "Unset");
-			
+
 			defaultMap.put("globalStartReset", "true");
 			defaultMap.put("globalUpDown", "true");
 			defaultMap.put("visualCue", "false");
 			defaultMap.put("beepSound", "ping1");
-			
+
 			defaultMap.put("visualCueLength", "20");
 			defaultMap.put("pin", "false");
+			
+			defaultMap.put("key", "On Press");
 
 			Config config;
 			if(!SETTINGS_FILE.exists()) {
@@ -154,9 +156,9 @@ public class FlowTimer {
 			}
 			fileSystemLocationBuffer = config.getStringWithDefault("fileSystemLocationBuffer", defaultMap.get("fileSystemLocationBuffer"));
 			timerLocationBuffer = config.getStringWithDefault("timerLocationBuffer", defaultMap.get("timerLocationBuffer"));
-			
+
 			visualCueLength = config.getIntWithDefault("visualCueLength", defaultMap.get("visualCueLength"));
-			
+
 			SettingsWindow.getStartInput().getPrimaryInput().set(config.getStringWithDefault("primaryStartKeyName", defaultMap.get("primaryStartKeyName")), config.getIntWithDefault("primaryStartKey", defaultMap.get("primaryStartKey")));
 			SettingsWindow.getResetInput().getPrimaryInput().set(config.getStringWithDefault("primaryResetKeyName", defaultMap.get("primaryResetKeyName")), config.getIntWithDefault("primaryResetKey", defaultMap.get("primaryResetKey")));
 			SettingsWindow.getUpInput().getPrimaryInput().set(config.getStringWithDefault("primaryUpKeyName", defaultMap.get("primaryUpKeyName")), config.getIntWithDefault("primaryUpKey", defaultMap.get("primaryUpKey")));
@@ -171,7 +173,8 @@ public class FlowTimer {
 			SettingsWindow.getGlobalUpDown().setSelected(config.getBooleanWithDefault("globalUpDown", defaultMap.get("globalUpDown")));
 			SettingsWindow.getVisualCue().setSelected(config.getBooleanWithDefault("visualCue", defaultMap.get("visualCue")));
 			SettingsWindow.getBeepSound().setSelectedItem(config.getStringWithDefault("beepSound", defaultMap.get("beepSound")));
-		
+			SettingsWindow.getKeyTrigger().setSelectedItem(config.getStringWithDefault("key", defaultMap.get("key")));
+
 			setPin(config.getBooleanWithDefault("pin", defaultMap.get("pin")));
 		} catch (Exception e) {
 			ErrorHandler.handleException(e, true);
@@ -188,7 +191,7 @@ public class FlowTimer {
 		timerLabel = new JLabel();
 		timerLabel.setBounds(11, 20, 120, 30);
 		timerLabel.setFont(new Font("Consolas", Font.BOLD, 29));
-		
+
 		pinLabel.setBounds(413, 5, 16, 16);
 		pinLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -234,7 +237,7 @@ public class FlowTimer {
 				HashMap<String, String> map = new HashMap<>();
 				map.put("fileSystemLocationBuffer", fileSystemLocationBuffer);
 				map.put("timerLocationBuffer", timerLocationBuffer);
-				
+
 				map.put("primaryStartKey", SettingsWindow.getStartInput().getPrimaryInput().getKeyCode() + "");
 				map.put("primaryResetKey", SettingsWindow.getResetInput().getPrimaryInput().getKeyCode() + "");
 				map.put("primaryUpKey", SettingsWindow.getUpInput().getPrimaryInput().getKeyCode() + "");
@@ -243,7 +246,7 @@ public class FlowTimer {
 				map.put("primaryResetKeyName", SettingsWindow.getResetInput().getPrimaryInput().getName());
 				map.put("primaryUpKeyName", SettingsWindow.getUpInput().getPrimaryInput().getName());
 				map.put("primaryDownKeyName", SettingsWindow.getDownInput().getPrimaryInput().getName());
-				
+
 				map.put("secondaryStartKey", SettingsWindow.getStartInput().getSecondaryInput().getKeyCode() + "");
 				map.put("secondaryResetKey", SettingsWindow.getResetInput().getSecondaryInput().getKeyCode() + "");
 				map.put("secondaryUpKey", SettingsWindow.getUpInput().getSecondaryInput().getKeyCode() + "");
@@ -252,7 +255,7 @@ public class FlowTimer {
 				map.put("secondaryResetKeyName", SettingsWindow.getResetInput().getSecondaryInput().getName());
 				map.put("secondaryUpKeyName", SettingsWindow.getUpInput().getSecondaryInput().getName());
 				map.put("secondaryDownKeyName", SettingsWindow.getDownInput().getSecondaryInput().getName());
-				
+
 				map.put("globalStartReset", SettingsWindow.getGlobalStartReset().isSelected() + "");
 				map.put("globalUpDown", SettingsWindow.getGlobalUpDown().isSelected() + "");
 				map.put("visualCue", SettingsWindow.getVisualCue().isSelected() + "");
@@ -260,7 +263,8 @@ public class FlowTimer {
 
 				map.put("visualCueLength", visualCueLength + "");
 				map.put("pin", frame.isAlwaysOnTop() + "");
-				
+				map.put("key", SettingsWindow.getKeyTrigger().getSelectedItem() + "");
+
 				Config config = new Config(map);
 				try {
 					config.write(SETTINGS_FILE_LOCATION);
@@ -270,7 +274,13 @@ public class FlowTimer {
 			}
 		});
 
-		if(timerLocationBuffer.equals("null")) {
+//		frame.addMouseListener(new MouseAdapter() {
+//			public void mouseClicked(MouseEvent e) {
+//				requestFocus();
+//			}
+//		});
+
+		if(timerLocationBuffer.equals("null") || !new File(timerLocationBuffer).exists()) {
 			addDefaultTimer(false);
 		} else {
 			loadTimers(timerLocationBuffer, false);
@@ -483,7 +493,7 @@ public class FlowTimer {
 	public static boolean isFocused() {
 		return frame.isActive();
 	}
-	
+
 	public static int getBeepSound() {
 		return beepSound;
 	}
@@ -491,10 +501,14 @@ public class FlowTimer {
 	public static void setBeepSound(int beepSound) {
 		FlowTimer.beepSound = beepSound;
 	}
-	
+
 	public static void setPin(boolean val) {
 		frame.setAlwaysOnTop(val);
 		pinLabel.setIcon(new ImageIcon(loadImage("/image/pin_" + val + ".png")));
+	}
+
+	public static void requestFocus() {
+		frame.requestFocusInWindow();
 	}
 
 	private static void addDefaultTimer(boolean addRemoveButton) {
@@ -516,7 +530,7 @@ public class FlowTimer {
 		saveTimersAsButton.setEnabled(enabled);
 		addButton.setEnabled(enabled);
 	}
-	
+
 	private static BufferedImage loadImage(String fileName) {
 		BufferedImage image = null;
 		try {
@@ -573,7 +587,7 @@ public class FlowTimer {
 	private static class TimerLabelUpdateThread implements Runnable {
 
 		private boolean isStopped;
-		
+
 		public void run() {
 			isStopped = false;
 			while(!isStopped) {
