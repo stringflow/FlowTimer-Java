@@ -1,4 +1,4 @@
-package flowtimer;
+package flowtimer.settings;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;

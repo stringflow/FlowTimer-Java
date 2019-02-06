@@ -1,4 +1,4 @@
-package flowtimer;
+package flowtimer.settings;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;

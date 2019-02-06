@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 public class ErrorHandler {
 
-	public static void handleException(Exception e, boolean delSettings) {
+	public static void handleException(Exception e, boolean deleteSettings) {
 		JOptionPane.showMessageDialog(null, "An error has occured when loading the settings file, please send the traceback.txt file to the developer for further help.", "Error", JOptionPane.ERROR_MESSAGE);
 		try {
 			PrintWriter writer = new PrintWriter("traceback.txt");
@@ -16,10 +16,10 @@ public class ErrorHandler {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		if(delSettings) {
+		if(deleteSettings) {
 			int result = JOptionPane.showOptionDialog(null, "Do you want to delete the settings file?", "Error", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, 0);
 			if(result == 0) {
-				FlowTimer.SETTINGS_FILE.delete();
+				//FlowTimer.SETTINGS_FILE.delete();
 			}
 		}
 		System.exit(1);

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import static org.lwjgl.openal.AL10.*;
 
-public class AudioEngine {
+public class OpenAL {
 	
 	private static final float PITCH = 1.0f;
 	private static final float GAIN = 1.0f;
@@ -25,7 +25,6 @@ public class AudioEngine {
 	public static void init() {
 		try {
 			AL.create();
-			alGetError();
 			alListener(AL_POSITION, LISTENER_POSITION);
 			alListener(AL_VELOCITY, LISTENER_VELOCITY);
 			alListener(AL_ORIENTATION, LISTENER_ORIENTATION);
@@ -40,7 +39,7 @@ public class AudioEngine {
 		int buffer = alGenBuffers();
 		int source = alGenSources();
 		try {
-			WaveData waveFile = WaveData.create(AudioEngine.class.getResource(filePath));
+			WaveData waveFile = WaveData.create(OpenAL.class.getResource(filePath));
 			alBufferData(buffer, waveFile.format, waveFile.data, waveFile.samplerate);
 			waveFile.dispose();
 			if(alGetError() != AL_NO_ERROR) {

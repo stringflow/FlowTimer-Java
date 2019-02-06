@@ -1,4 +1,4 @@
-package flowtimer;
+package flowtimer.settings;
 
 import java.awt.Dialog.ModalityType;
 
@@ -9,28 +9,30 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+import flowtimer.FlowTimer;
+
 public class SettingsWindow {
 
 	public static final int WIDTH = 290;
 	public static final int HEIGHT = 260;
-	public static final String TITLE = "FlowTimer 1.5 - Settings";
+	public static final String TITLE = "FlowTimer 1.6 - Settings";
 
-	private static JDialog dialog;
+	private JDialog dialog;
 
-	private static KeyInput startInput;
-	private static KeyInput resetInput;
-	private static KeyInput upInput;
-	private static KeyInput downInput;
-	private static JCheckBox globalStartReset;
-	private static JCheckBox globalUpDown;
-	private static JCheckBox visualCue;
-	private static JLabel beepSoundLabel;
-	private static JComboBox<String> beepSound;
-	private static JLabel keyTriggerLabel;
-	private static JComboBox<String> keyTrigger;
+	private KeyInput startInput;
+	private KeyInput stopInput;
+	private KeyInput upInput;
+	private KeyInput downInput;
+	private JCheckBox globalStartReset;
+	private JCheckBox globalUpDown;
+	private JCheckBox visualCue;
+	private JLabel beepSoundLabel;
+	private JComboBox<String> beepSound;
+	private JLabel keyTriggerLabel;
+	private JComboBox<String> keyTrigger;
 
-	public static void create(JFrame parent) {
-		dialog = new JDialog(parent, TITLE, ModalityType.APPLICATION_MODAL);
+	public SettingsWindow(FlowTimer flowtimer) {
+		dialog = new JDialog(flowtimer.getFrame(), TITLE, ModalityType.APPLICATION_MODAL);
 		dialog.setSize(WIDTH, HEIGHT);
 		dialog.setLayout(null);
 		dialog.setLocationRelativeTo(null);
@@ -39,7 +41,7 @@ public class SettingsWindow {
 		dialog.setVisible(false);
 
 		startInput = new KeyInput(dialog, 0, "Start");
-		resetInput = new KeyInput(dialog, 1, "Reset");
+		stopInput = new KeyInput(dialog, 1, "Stop");
 		upInput = new KeyInput(dialog, 2, "Up");
 		downInput = new KeyInput(dialog, 3, "Down");
 
@@ -54,11 +56,11 @@ public class SettingsWindow {
 		beepSound = new JComboBox<>();
 		beepSound.setBounds(46, 106, 85, 21);
 		((JLabel)beepSound.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-		FlowTimer.BEEP_MAP.keySet().forEach(beepSound::addItem);
+		flowtimer.getSoundMap().keySet().forEach(beepSound::addItem);
 		beepSound.addActionListener(e -> {
-			FlowTimer.setBeepSound(FlowTimer.BEEP_MAP.get(beepSound.getSelectedItem()));
+			flowtimer.getSoundAction().setSound(flowtimer.getSoundMap().get(beepSound.getSelectedItem()));
 			if(isVisible()) {
-				AudioEngine.playSource(FlowTimer.getBeepSound());
+				flowtimer.getSoundAction().run();
 			}
 		});
 		
@@ -83,47 +85,47 @@ public class SettingsWindow {
 		dialog.add(keyTrigger);
 	}
 
-	public static void show() {
+	public void show() {
 		dialog.setVisible(true);
 	}
 
-	public static KeyInput getStartInput() {
+	public KeyInput getStartInput() {
 		return startInput;
 	}
 
-	public static KeyInput getResetInput() {
-		return resetInput;
+	public KeyInput getStopInput() {
+		return stopInput;
 	}
 
-	public static KeyInput getUpInput() {
+	public KeyInput getUpInput() {
 		return upInput;
 	}
 
-	public static KeyInput getDownInput() {
+	public KeyInput getDownInput() {
 		return downInput;
 	}
 
-	public static JCheckBox getGlobalStartReset() {
+	public JCheckBox getGlobalStartReset() {
 		return globalStartReset;
 	}
 
-	public static JCheckBox getGlobalUpDown() {
+	public JCheckBox getGlobalUpDown() {
 		return globalUpDown;
 	}
 
-	public static JCheckBox getVisualCue() {
+	public JCheckBox getVisualCue() {
 		return visualCue;
 	}
 
-	public static JComboBox<String> getBeepSound() {
+	public JComboBox<String> getBeepSound() {
 		return beepSound;
 	}
 
-	public static JComboBox<String> getKeyTrigger() {
+	public JComboBox<String> getKeyTrigger() {
 		return keyTrigger;
 	}
 
-	public static boolean isVisible() {
+	public boolean isVisible() {
 		return dialog.isVisible();
 	}
 }
