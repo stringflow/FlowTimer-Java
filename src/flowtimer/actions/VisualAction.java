@@ -10,18 +10,16 @@ public class VisualAction extends Action {
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
 	private Color color;
-	private int length;
 	
-	public VisualAction(FlowTimer flowtimer, Color color, int length) {
+	public VisualAction(FlowTimer flowtimer, Color color) {
 		super(flowtimer);
 		this.color = color;
-		this.length = length;
 	}
 
 	public void run() {
 		flowtimer.getVisualPanel().setBackColor(color);
 		try {
-			Thread.sleep(length);
+			Thread.sleep(flowtimer.getSettings().getVisualCueLength().getValue());
 		} catch (InterruptedException e) {
 			ErrorHandler.handleException(e, false);
 		}
@@ -34,14 +32,6 @@ public class VisualAction extends Action {
 
 	public void setColor(Color color) {
 		this.color = color;
-	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
 	}
 
 	public boolean shouldExecute() {

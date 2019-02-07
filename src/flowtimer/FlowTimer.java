@@ -122,7 +122,7 @@ public class FlowTimer {
 				map.put("beepSound", settingsWindow.getBeepSound().getSelectedItem() + "");
 
 				map.put("visualCueColor", String.format("#%02X%02X%02X", visualAction.getColor().getRed(), visualAction.getColor().getGreen(), visualAction.getColor().getBlue()));
-				map.put("visualCueLength", visualAction.getLength() + "");
+				map.put("visualCueLength", settingsWindow.getVisualCueLength().getValue() + "");
 				map.put("pin", frame.isAlwaysOnTop() + "");
 				map.put("key", settingsWindow.getKeyTrigger().getSelectedItem() + "");
 
@@ -174,7 +174,7 @@ public class FlowTimer {
 
 		actions = new ArrayList<>();
 		soundAction = new SoundAction(this, 0);
-		visualAction = new VisualAction(this, null, 0);
+		visualAction = new VisualAction(this, null);
 
 		try {
 			loadSettings();
@@ -257,7 +257,7 @@ public class FlowTimer {
 		delayTimer.setTimerLocationBuffer(config.getString("timerLocationBuffer"));
 
 		visualAction.setColor(Color.decode(config.getString("visualCueColor")));
-		visualAction.setLength(config.getInt("visualCueLength"));
+		settingsWindow.getVisualCueLength().setValue(config.getInt("visualCueLength"));
 
 		settingsWindow.getStartInput().getPrimaryInput().set(config.getString("primaryStartKeyName"), config.getInt("primaryStartKey"));
 		settingsWindow.getStopInput().getPrimaryInput().set(config.getString("primaryResetKeyName"), config.getInt("primaryResetKey"));

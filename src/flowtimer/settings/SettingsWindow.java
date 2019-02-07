@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import flowtimer.FlowTimer;
+import flowtimer.IntTextField;
 import flowtimer.OpenAL;
 
 public class SettingsWindow extends JDialog {
@@ -24,9 +25,11 @@ public class SettingsWindow extends JDialog {
 	private KeyInput stopInput;
 	private KeyInput upInput;
 	private KeyInput downInput;
+	private JCheckBox visualCue;
 	private JCheckBox globalStartStop;
 	private JCheckBox globalUpDown;
-	private JCheckBox visualCue;
+	private JLabel visualCueLengthLabel;
+	private IntTextField visualCueLength;
 	private JLabel beepSoundLabel;
 	private JComboBox<String> beepSound;
 	private JLabel keyTriggerLabel;
@@ -42,19 +45,25 @@ public class SettingsWindow extends JDialog {
 		setResizable(false);
 		setVisible(false);
 		
+		visualCue = new JCheckBox("Visual Cue");
 		globalStartStop = new JCheckBox("Global Start/Stop");
 		globalUpDown = new JCheckBox("Global Up/Down");
+
+		visualCue.setBounds(5, 155, 120, 20);
+		globalStartStop.setBounds(5, 175, 120, 20);
+		globalUpDown.setBounds(5, 195, 120, 20);
+		
+		visualCueLengthLabel = new JLabel("Visual Length:");
+		visualCueLengthLabel.setBounds(138, 155, 120, 20);
+		
+		visualCueLength = new IntTextField(false);
+		visualCueLength.setBounds(209, 156, 55, 18);
 
 		startInput = new KeyInput(this, 0, "Start").setGlobalCheckbox(globalStartStop);
 		stopInput = new KeyInput(this, 1, "Stop").setGlobalCheckbox(globalStartStop);
 		upInput = new KeyInput(this, 2, "Up").setGlobalCheckbox(globalUpDown);
 		downInput = new KeyInput(this, 3, "Down").setGlobalCheckbox(globalUpDown);
 
-		visualCue = new JCheckBox("Visual Cue");
-
-		globalStartStop.setBounds(5, 155, 120, 20);
-		globalUpDown.setBounds(5, 175, 120, 20);
-		visualCue.setBounds(5, 195, 120, 20);
 
 		//TODO: Maybe pull these directly from the directory instead of hard coding them like this
 		beepSound = new JComboBox<>(new String[] { "beep", "clack", "clap", "click1", "ping1", "ping2" });
@@ -86,6 +95,8 @@ public class SettingsWindow extends JDialog {
 		add(beepSound);
 		add(keyTriggerLabel);
 		add(keyTrigger);
+		add(visualCueLengthLabel);
+		add(visualCueLength);
 	}
 
 	public KeyInput getStartInput() {
@@ -122,6 +133,14 @@ public class SettingsWindow extends JDialog {
 
 	public JComboBox<String> getKeyTrigger() {
 		return keyTrigger;
+	}
+	
+	public IntTextField getVisualCueLength() {
+		return visualCueLength;
+	}
+
+	public void setVisualCueLength(IntTextField visualCueLength) {
+		this.visualCueLength = visualCueLength;
 	}
 
 	public FlowTimer getFlowtimer() {
