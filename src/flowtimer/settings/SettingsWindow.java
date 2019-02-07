@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import flowtimer.FlowTimer;
+import flowtimer.OpenAL;
 
 public class SettingsWindow extends JDialog {
 
@@ -55,12 +56,12 @@ public class SettingsWindow extends JDialog {
 		globalUpDown.setBounds(5, 175, 120, 20);
 		visualCue.setBounds(5, 195, 120, 20);
 
-		beepSound = new JComboBox<>();
+		//TODO: Maybe pull these directly from the directory instead of hard coding them like this
+		beepSound = new JComboBox<>(new String[] { "beep", "clack", "clap", "click1", "ping1", "ping2" });
 		beepSound.setBounds(46, 106, 85, 21);
 		((JLabel)beepSound.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-		flowtimer.getSoundMap().keySet().forEach(beepSound::addItem);
 		beepSound.addActionListener(e -> {
-			flowtimer.getSoundAction().setSound(flowtimer.getSoundMap().get(beepSound.getSelectedItem()));
+			flowtimer.getSoundAction().setSound(OpenAL.createSource("/sound/" + beepSound.getSelectedItem() + ".wav"));
 			if(isVisible()) {
 				flowtimer.getSoundAction().run();
 			}

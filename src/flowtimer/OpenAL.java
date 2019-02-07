@@ -6,6 +6,7 @@ import org.lwjgl.util.WaveData;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.lwjgl.openal.AL10.*;
 
@@ -19,6 +20,7 @@ public class OpenAL {
 	private static final FloatBuffer LISTENER_VELOCITY = BufferUtils.createFloatBuffer(3).put(new float[] {0.0f, 0.0f, 0.0f}).rewind();
 	private static final FloatBuffer LISTENER_ORIENTATION = BufferUtils.createFloatBuffer(6).put(new float[] {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f}).rewind();
 	
+	private static HashMap<String, Integer> loadedSounds;
 	private static ArrayList<Integer> bufferList;
 	private static ArrayList<Integer> sourceList;
 
@@ -28,6 +30,7 @@ public class OpenAL {
 			alListener(AL_POSITION, LISTENER_POSITION);
 			alListener(AL_VELOCITY, LISTENER_VELOCITY);
 			alListener(AL_ORIENTATION, LISTENER_ORIENTATION);
+			loadedSounds = new HashMap<>();
 			bufferList = new ArrayList<>();
 			sourceList = new ArrayList<>();
 		} catch(Exception e) {
@@ -36,6 +39,9 @@ public class OpenAL {
 	}
 	
 	public static int createSource(String filePath) {
+		if(loadedSounds.containsKey(filePath)) {
+			return loadedSounds.get(filePath);
+		}
 		int buffer = alGenBuffers();
 		int source = alGenSources();
 		try {
@@ -50,6 +56,7 @@ public class OpenAL {
 			alSourcef(source, AL_GAIN, GAIN);
 			alSource(source, AL_POSITION, SOURCE_POSITION);
 			alSource(source, AL_VELOCITY, SOURCE_VELOCITY);
+			loadedSounds.put(filePath, source);
 			bufferList.add(buffer);
 			sourceList.add(source);
 		} catch(Exception e) {

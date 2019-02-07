@@ -158,10 +158,12 @@ public class DelayTimer extends BaseTimer {
 	public void onTimerStart(long startTime) {
 		runningTimer = selectedTimer;
 		flowtimer.scheduleActions(runningTimer.getOffsets(), runningTimer.getInterval(), runningTimer.getNumBeeps(), 0);
+		setInterface(false);
 	}
 
 	public void onTimerStop() {
 		flowtimer.setTimerLabel(selectedTimer.getMaxOffset());
+		setInterface(true);
 	}
 
 	public void onTimerLabelUpdate(long time) {
@@ -176,20 +178,20 @@ public class DelayTimer extends BaseTimer {
 		}
 	}
 
-	public void setInterface(boolean enabled) {
-		timers.forEach(timer -> timer.setElements(enabled));
-		saveTimersButton.setEnabled(enabled);
-		loadTimersButton.setEnabled(enabled);
-		saveTimersAsButton.setEnabled(enabled);
-		addButton.setEnabled(enabled);
-	}
-
 	public ITimerLabelUpdateCallback getTimerLabelUpdateCallback() {
 		return (startTime) -> runningTimer.getMaxOffset() - (System.nanoTime() - startTime) / 1_000_000;
 	}
 
 	public boolean canStartTimer() {
 		return selectedTimer != null;
+	}
+	
+	private void setInterface(boolean enabled) {
+		timers.forEach(timer -> timer.setElements(enabled));
+		saveTimersButton.setEnabled(enabled);
+		loadTimersButton.setEnabled(enabled);
+		saveTimersAsButton.setEnabled(enabled);
+		addButton.setEnabled(enabled);
 	}
 
 	private void onSaveTimersPress() {

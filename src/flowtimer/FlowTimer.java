@@ -62,15 +62,12 @@ public class FlowTimer {
 	private long timerStartTime;
 	private TimerLabelUpdateThread timerLabelUpdateThread;
 
-	private HashMap<String, Integer> soundMap;
-
 	private SoundAction soundAction;
 	private VisualAction visualAction;
 	private ArrayList<Action> actions;
 
 	public FlowTimer() {
 		try {
-
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 			OpenAL.init();
@@ -79,14 +76,6 @@ public class FlowTimer {
 			logger.setUseParentHandlers(false);
 			GlobalScreen.registerNativeHook();
 			GlobalScreen.addNativeKeyListener(new GlobalScreenListener());
-
-			soundMap = new HashMap<>();
-			soundMap.put("ping1", OpenAL.createSource("/sound/ping1.wav"));
-			soundMap.put("ping2", OpenAL.createSource("/sound/ping2.wav"));
-			soundMap.put("clack", OpenAL.createSource("/sound/clack.wav"));
-			soundMap.put("click1", OpenAL.createSource("/sound/click1.wav"));
-			soundMap.put("clap", OpenAL.createSource("/sound/clap.wav"));
-			soundMap.put("beep", OpenAL.createSource("/sound/beep.wav"));
 		} catch (Exception e) {
 			ErrorHandler.handleException(e, true);
 		}
@@ -344,7 +333,6 @@ public class FlowTimer {
 	}
 
 	public void setInterface(boolean enabled) {
-		getSelectedTimer().setInterface(enabled);
 		settingsButton.setEnabled(enabled);
 		tabbedPane.setEnabled(enabled);
 	}
@@ -380,10 +368,6 @@ public class FlowTimer {
 
 	public ArrayList<Action> getActions() {
 		return actions;
-	}
-
-	public HashMap<String, Integer> getSoundMap() {
-		return soundMap;
 	}
 
 	public SettingsWindow getSettings() {
