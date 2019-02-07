@@ -23,8 +23,4 @@ public class SoundAction extends Action {
 	public void setSound(int sound) {
 		this.sound = sound;
 	}
-
-	public boolean shouldExecute() {
-		return true;
-	}
 }

@@ -11,5 +11,7 @@ public abstract class Action implements Runnable {
 		flowtimer.getActions().add(this);
 	}
 	
-	public abstract boolean shouldExecute();
+	public boolean shouldExecute() {
+		return true;
+	}
 }

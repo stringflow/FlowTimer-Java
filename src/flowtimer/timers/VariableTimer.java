@@ -14,7 +14,7 @@ import flowtimer.FlowTimer;
 import flowtimer.ITimerLabelUpdateCallback;
 import flowtimer.IntTextField;
 
-public class VariableTimer extends Timer {
+public class VariableTimer extends BaseTimer {
 
 	private static final long serialVersionUID = 8201416389693271334L;
 	
@@ -47,8 +47,7 @@ public class VariableTimer extends Timer {
 			long offsets[] = { getVariableOffset() - passedTime };
 			int interval = intervalComponent.getComponent().getValue();
 			int numBeeps = numBeepsComponent.getComponent().getValue();
-			long calibration = (System.nanoTime() - flowtimer.getTimerStartTime()) - passedTime * 1_000_000;
-			long universalOffset = offsetComponent.getComponent().getValue() * 1_000_000 + calibration;
+			long universalOffset = offsetComponent.getComponent().getValue();
 			flowtimer.scheduleActions(offsets, interval, numBeeps, universalOffset);
 			setVariableInterface(false);
 			submitButton.setEnabled(false);
@@ -96,6 +95,7 @@ public class VariableTimer extends Timer {
 
 	public void onTimerStop() {
 		flowtimer.setTimerLabel(0);
+		setVariableInterface(true);
 	}
 
 	public void onTimerLabelUpdate(long time) {

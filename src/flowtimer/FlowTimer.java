@@ -10,10 +10,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,8 +30,8 @@ import flowtimer.actions.VisualAction;
 import flowtimer.parsing.Config;
 import flowtimer.settings.KeyInput;
 import flowtimer.settings.SettingsWindow;
+import flowtimer.timers.BaseTimer;
 import flowtimer.timers.DelayTimer;
-import flowtimer.timers.Timer;
 import flowtimer.timers.VariableTimer;
 
 public class FlowTimer {
@@ -58,8 +56,7 @@ public class FlowTimer {
 	private MenuButton settingsButton;
 	private JLabel pinLabel;
 
-	private ScheduledExecutorService scheduler;
-	private ScheduledFuture<?>[] actionFutures;
+	private Timer timers[];
 	private boolean isTimerRunning;
 	private boolean areActionsScheduled;
 	private long timerStartTime;
@@ -198,7 +195,7 @@ public class FlowTimer {
 
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(e -> {
-			Timer tab = getSelectedTimer();
+			BaseTimer tab = getSelectedTimer();
 			tab.add(timerLabel);
 			tab.add(startButton);
 			tab.add(resetButton);
@@ -214,9 +211,6 @@ public class FlowTimer {
 		frame.add(tabbedPane);
 
 		frame.repaint();
-
-		scheduler = Executors.newScheduledThreadPool(2);
-		actionFutures = new ScheduledFuture[0];
 	}
 
 	private void loadSettings() throws Exception {
@@ -269,7 +263,7 @@ public class FlowTimer {
 			config = new Config(SETTINGS_FILE_LOCATION);
 		}
 		config.setDefaultMap(defaultMap);
-		
+
 		delayTimer.setFileSystemLocationBuffer(config.getString("fileSystemLocationBuffer"));
 		delayTimer.setTimerLocationBuffer(config.getString("timerLocationBuffer"));
 
@@ -318,8 +312,10 @@ public class FlowTimer {
 		if(!isTimerRunning) {
 			return;
 		}
-		for(ScheduledFuture<?> future : actionFutures) {
-			future.cancel(false);
+		if(timers != null) {
+			for(int i = 0; i < timers.length; i++) {
+				timers[i].cancel();
+			}
 		}
 		isTimerRunning = false;
 		areActionsScheduled = false;
@@ -329,14 +325,15 @@ public class FlowTimer {
 	}
 
 	public void stopTimerSegment(int index) {
-		actionFutures[index].cancel(false);
+		timers[index].cancel();
 	}
 
 	public void scheduleActions(long offsets[], int interval, int numBeeps, long universalOffset) {
-		actionFutures = new ScheduledFuture[offsets.length];
+		timers = new Timer[offsets.length];
 		for(int i = 0; i < offsets.length; i++) {
 			ActionThread actionThread = new ActionThread(i, i == offsets.length - 1, numBeeps);
-			actionFutures[i] = scheduler.scheduleAtFixedRate(actionThread, (offsets[i] - interval * (numBeeps - 1)) * 1_000_000 - universalOffset, interval * 1_000_000, TimeUnit.NANOSECONDS);
+			timers[i] = new Timer();
+			timers[i].scheduleAtFixedRate(actionThread, (offsets[i] - interval * (numBeeps - 1)) + universalOffset, interval);
 		}
 		areActionsScheduled = true;
 	}
@@ -357,8 +354,8 @@ public class FlowTimer {
 		pinLabel.setIcon(ImageLoader.loadImage("/image/pin_" + val + ".png"));
 	}
 
-	public Timer getSelectedTimer() {
-		return (Timer) tabbedPane.getSelectedComponent();
+	public BaseTimer getSelectedTimer() {
+		return (BaseTimer) tabbedPane.getSelectedComponent();
 	}
 
 	public void setTimerLabel(String text) {
@@ -456,7 +453,7 @@ public class FlowTimer {
 		}
 	}
 
-	public class ActionThread implements Runnable {
+	public class ActionThread extends TimerTask {
 
 		private int index;
 		private boolean isLast;

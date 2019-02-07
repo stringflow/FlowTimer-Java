@@ -32,7 +32,7 @@ import flowtimer.parsing.json.JSONArray;
 import flowtimer.parsing.json.JSONObject;
 import flowtimer.parsing.json.JSONValue;
 
-public class DelayTimer extends Timer {
+public class DelayTimer extends BaseTimer {
 
 	private static final long serialVersionUID = -913980123921622303L;
 

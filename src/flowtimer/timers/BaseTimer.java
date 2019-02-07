@@ -10,13 +10,13 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import flowtimer.FlowTimer;
 import flowtimer.ITimerLabelUpdateCallback;
 
-public abstract class Timer extends JPanel {
+public abstract class BaseTimer extends JPanel {
 	
 	private static final long serialVersionUID = 4300353226811341053L;
 	
 	protected FlowTimer flowtimer;
 	
-	public Timer(FlowTimer flowtimer) {
+	public BaseTimer(FlowTimer flowtimer) {
 		this.flowtimer = flowtimer;
 		setLayout(null);
 		addMouseListener(new MouseAdapter() {
