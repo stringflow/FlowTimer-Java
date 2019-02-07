@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -20,12 +21,16 @@ public class KeyInput {
 	public static JDialog waitDialog;
 	public static NamedInput selectedInput;
 	
+	private SettingsWindow parent;
 	private JLabel label;
 	private NamedInput primaryInput;
 	private NamedInput secondaryInput;
 	private JButton clearButton;
+	private JCheckBox globalCheckbox;
 
-	public KeyInput(JDialog parent, int index, String actionName) {
+	public KeyInput(SettingsWindow parent, int index, String actionName) {
+		this.parent = parent;
+		
 		int yPos = Y_BASE + Y_STEP * index;
 		
 		label = new JLabel(actionName + ":");
@@ -56,6 +61,26 @@ public class KeyInput {
 
 	public NamedInput getSecondaryInput() {
 		return secondaryInput;
+	}
+	
+	public boolean isPressed(int keyCode) {
+		return (parent.getFlowtimer().getFrame().isFocused() || isGlobal()) && (primaryInput.getKeyCode() == keyCode || secondaryInput.getKeyCode() == keyCode);
+	}
+	
+	public boolean isGlobal() {
+		if(globalCheckbox == null) {
+			return false;
+		}
+		return globalCheckbox.isSelected();
+	}
+
+	public JCheckBox getGlobalCheckbox() {
+		return globalCheckbox;
+	}
+
+	public KeyInput setGlobalCheckbox(JCheckBox global) {
+		this.globalCheckbox = global;
+		return this;
 	}
 
 	private static class ButtonActionListener implements ActionListener {

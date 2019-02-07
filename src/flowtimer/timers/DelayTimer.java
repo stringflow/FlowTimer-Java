@@ -41,14 +41,14 @@ public class DelayTimer extends Timer {
 	private static final int ADD_BUTTON_WIDTH = 55;
 	private static final int ADD_BUTTON_HEIGHT = 22;
 	private static final int ADD_BUTTON_PADDING = 3;
-	
+
 	private String fileSystemLocationBuffer;
 	private String timerLocationBuffer;
-	
+
 	private LinkedList<TimerEntry> timers;
 	private TimerEntry selectedTimer;
 	private TimerEntry runningTimer;
-	
+
 	private ButtonGroup timerButtonGroup;
 	private JButton addButton;
 	private MenuButton loadTimersButton;
@@ -58,24 +58,24 @@ public class DelayTimer extends Timer {
 	private ColumnLabel offsetLabel;
 	private ColumnLabel intervalLabel;
 	private ColumnLabel numBeepsLabel;
-	
+
 	public DelayTimer(FlowTimer flowtimer) {
 		super(flowtimer);
-		
+
 		timerButtonGroup = new ButtonGroup();
-		
+
 		addButton = new JButton("Add");
 		addButton.setSize(ADD_BUTTON_WIDTH, ADD_BUTTON_HEIGHT);
-		
+
 		loadTimersButton = new MenuButton("Load Timers", 3);
 		saveTimersButton = new MenuButton("Save Timers", 4);
 		saveTimersAsButton = new MenuButton("Save Timers As", 5);
-		
+
 		nameLabel = new ColumnLabel("Name", 0);
 		offsetLabel = new ColumnLabel("Offset", 1);
 		intervalLabel = new ColumnLabel("Interval", 2);
 		numBeepsLabel = new ColumnLabel("Beeps", 3);
-		
+
 		add(addButton);
 		add(loadTimersButton);
 		add(saveTimersButton);
@@ -84,15 +84,15 @@ public class DelayTimer extends Timer {
 		add(offsetLabel);
 		add(intervalLabel);
 		add(numBeepsLabel);
-		
+
 		timers = new LinkedList<>();
-		
+
 		addButton.addActionListener(e -> addDefaultTimer(true));
 		loadTimersButton.addActionListener(e -> onLoadTimersPress());
 		saveTimersButton.addActionListener(e -> onSaveTimersPress());
 		saveTimersAsButton.addActionListener(e -> onSaveTimersAsPress());
 	}
-	
+
 	public void onLoad() {
 		if(!new File(timerLocationBuffer).exists()) {
 			if(!timerLocationBuffer.equals("null")) {
@@ -103,15 +103,15 @@ public class DelayTimer extends Timer {
 		} else {
 			loadTimers(timerLocationBuffer, false);
 		}
-		
+
 		flowtimer.setTimerLabel(0);
 		selectedTimer.select();
 	}
-	
+
 	private void addDefaultTimer(boolean addRemoveButton) {
 		addTimer("Timer", "5000", 500, 5, addRemoveButton);
 	}
-	
+
 	public void addTimer(String name, String offset, long interval, int numBeeps, boolean addRemoveButton) {
 		addNewTimer(new TimerEntry(timers.size(), name, offset, interval, numBeeps, addRemoveButton));
 	}
@@ -123,7 +123,7 @@ public class DelayTimer extends Timer {
 		recalcAddButton();
 		repaint();
 	}
-	
+
 	public void removeTimer(TimerEntry timer) {
 		timers.remove(timer);
 		timer.removeAllElements(this);
@@ -136,18 +136,18 @@ public class DelayTimer extends Timer {
 		recalcAddButton();
 		repaint();
 	}
-	
+
 	public void changeTimer(int amount) {
 		int currentIndex = timers.indexOf(selectedTimer);
 		currentIndex += amount;
 		currentIndex = Math.floorMod(currentIndex, timers.size());
 		timers.get(currentIndex).select();
 	}
-	
+
 	public TimerEntry getTimer(int index) {
 		return timers.get(index);
 	}
-	
+
 	private void recalcAddButton() {
 		int addButtonX = ADD_BUTTON_BASE_X;
 		int addButtonY = ADD_BUTTON_BASE_Y + (addButton.getHeight() + ADD_BUTTON_PADDING) * timers.size();
@@ -159,25 +159,23 @@ public class DelayTimer extends Timer {
 		runningTimer = selectedTimer;
 		flowtimer.scheduleActions(runningTimer.getOffsets(), runningTimer.getInterval(), runningTimer.getNumBeeps(), 0);
 	}
-	
+
 	public void onTimerStop() {
 		flowtimer.setTimerLabel(selectedTimer.getMaxOffset());
 	}
-	
+
 	public void onTimerLabelUpdate(long time) {
 	}
-	
+
 	public void onKeyEvent(NativeKeyEvent e) {
-		if((flowtimer.getFrame().isFocused() || flowtimer.getSettings().getGlobalUpDown().isSelected())) {
-			if(e.getKeyCode() == flowtimer.getSettings().getUpInput().getPrimaryInput().getKeyCode() || e.getKeyCode() == flowtimer.getSettings().getUpInput().getSecondaryInput().getKeyCode()) {
-				changeTimer(-1);
-			}
-			if(e.getKeyCode() == flowtimer.getSettings().getDownInput().getPrimaryInput().getKeyCode() || e.getKeyCode() == flowtimer.getSettings().getDownInput().getSecondaryInput().getKeyCode()) {
-				changeTimer(+1);
-			}
+		if(flowtimer.getSettings().getUpInput().isPressed(e.getKeyCode())) {
+			changeTimer(-1);
+		}
+		if(flowtimer.getSettings().getDownInput().isPressed(e.getKeyCode())) {
+			changeTimer(+1);
 		}
 	}
-	
+
 	public void setInterface(boolean enabled) {
 		timers.forEach(timer -> timer.setElements(enabled));
 		saveTimersButton.setEnabled(enabled);
@@ -189,7 +187,7 @@ public class DelayTimer extends Timer {
 	public ITimerLabelUpdateCallback getTimerLabelUpdateCallback() {
 		return (startTime) -> runningTimer.getMaxOffset() - (System.nanoTime() - startTime) / 1_000_000;
 	}
-	
+
 	public boolean canStartTimer() {
 		return selectedTimer != null;
 	}
@@ -201,7 +199,7 @@ public class DelayTimer extends Timer {
 			saveTimers(timerLocationBuffer);
 		}
 	}
-	
+
 	private void onSaveTimersAsPress() {
 		JFileChooser fileChooser = new JFileChooser(fileSystemLocationBuffer);
 		fileChooser.setDialogTitle("Save Timers");
@@ -215,7 +213,7 @@ public class DelayTimer extends Timer {
 			saveTimers(filePath);
 		}
 	}
-	
+
 	private void saveTimers(String filePath) {
 		JSONArray array = new JSONArray();
 		for(TimerEntry timer : timers) {
@@ -232,7 +230,7 @@ public class DelayTimer extends Timer {
 		timerLocationBuffer = filePath;
 		JOptionPane.showMessageDialog(null, "Timers successfully saved to " + filePath, "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
-	
+
 	private void onLoadTimersPress() {
 		JFileChooser fileChooser = new JFileChooser(fileSystemLocationBuffer);
 		fileChooser.setDialogTitle("Load Timers");
@@ -244,7 +242,7 @@ public class DelayTimer extends Timer {
 			loadTimers(filePath, true);
 		}
 	}
-	
+
 	private void loadTimers(String filePath, boolean showSuccessMessage) {
 		LinkedList<TimerEntry> loadedList = new LinkedList<>();
 		try {
@@ -267,7 +265,7 @@ public class DelayTimer extends Timer {
 			JOptionPane.showMessageDialog(null, "Timers successfully loaded.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
-	
+
 	public String getTimerLocationBuffer() {
 		return timerLocationBuffer;
 	}
@@ -287,7 +285,7 @@ public class DelayTimer extends Timer {
 	public class ColumnLabel extends JLabel {
 
 		private static final long serialVersionUID = 6275772904824072659L;
-		
+
 		public static final int WIDTH = 55;
 		public static final int HEIGHT = 20;
 		public static final int X_BASE = 146;
@@ -316,7 +314,7 @@ public class DelayTimer extends Timer {
 
 		public static final int REMOVE_BUTTON_X_OFFSET = 59;
 		public static final int REMOVE_BUTTON_WIDTH = 40;
-		
+
 		private JRadioButton radioButton;
 		private JTextField nameField;
 		private JTextField offsetField;

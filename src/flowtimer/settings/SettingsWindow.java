@@ -1,7 +1,5 @@
 package flowtimer.settings;
 
-import java.awt.Dialog.ModalityType;
-
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -11,19 +9,21 @@ import javax.swing.SwingConstants;
 
 import flowtimer.FlowTimer;
 
-public class SettingsWindow {
+public class SettingsWindow extends JDialog {
 
+	private static final long serialVersionUID = 6382472812309191157L;
+	
 	public static final int WIDTH = 290;
 	public static final int HEIGHT = 260;
 	public static final String TITLE = "FlowTimer 1.6 - Settings";
 
-	private JDialog dialog;
+	private FlowTimer flowtimer;
 
 	private KeyInput startInput;
 	private KeyInput stopInput;
 	private KeyInput upInput;
 	private KeyInput downInput;
-	private JCheckBox globalStartReset;
+	private JCheckBox globalStartStop;
 	private JCheckBox globalUpDown;
 	private JCheckBox visualCue;
 	private JLabel beepSoundLabel;
@@ -32,24 +32,26 @@ public class SettingsWindow {
 	private JComboBox<String> keyTrigger;
 
 	public SettingsWindow(FlowTimer flowtimer) {
-		dialog = new JDialog(flowtimer.getFrame(), TITLE, ModalityType.APPLICATION_MODAL);
-		dialog.setSize(WIDTH, HEIGHT);
-		dialog.setLayout(null);
-		dialog.setLocationRelativeTo(null);
-		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		dialog.setResizable(false);
-		dialog.setVisible(false);
-
-		startInput = new KeyInput(dialog, 0, "Start");
-		stopInput = new KeyInput(dialog, 1, "Stop");
-		upInput = new KeyInput(dialog, 2, "Up");
-		downInput = new KeyInput(dialog, 3, "Down");
-
-		globalStartReset = new JCheckBox("Global Start/Reset");
+		super(flowtimer.getFrame(), TITLE, ModalityType.APPLICATION_MODAL);
+		this.flowtimer = flowtimer;
+		setSize(WIDTH, HEIGHT);
+		setLayout(null);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setResizable(false);
+		setVisible(false);
+		
+		globalStartStop = new JCheckBox("Global Start/Stop");
 		globalUpDown = new JCheckBox("Global Up/Down");
+
+		startInput = new KeyInput(this, 0, "Start").setGlobalCheckbox(globalStartStop);
+		stopInput = new KeyInput(this, 1, "Stop").setGlobalCheckbox(globalStartStop);
+		upInput = new KeyInput(this, 2, "Up").setGlobalCheckbox(globalUpDown);
+		downInput = new KeyInput(this, 3, "Down").setGlobalCheckbox(globalUpDown);
+
 		visualCue = new JCheckBox("Visual Cue");
 
-		globalStartReset.setBounds(5, 155, 120, 20);
+		globalStartStop.setBounds(5, 155, 120, 20);
 		globalUpDown.setBounds(5, 175, 120, 20);
 		visualCue.setBounds(5, 195, 120, 20);
 
@@ -76,17 +78,13 @@ public class SettingsWindow {
 		keyTriggerLabel = new JLabel("Key:");
 		keyTriggerLabel.setBounds(10, 130, 50, 20);
 
-		dialog.add(globalStartReset);
-		dialog.add(globalUpDown);
-		dialog.add(visualCue);
-		dialog.add(beepSoundLabel);
-		dialog.add(beepSound);
-		dialog.add(keyTriggerLabel);
-		dialog.add(keyTrigger);
-	}
-
-	public void show() {
-		dialog.setVisible(true);
+		add(globalStartStop);
+		add(globalUpDown);
+		add(visualCue);
+		add(beepSoundLabel);
+		add(beepSound);
+		add(keyTriggerLabel);
+		add(keyTrigger);
 	}
 
 	public KeyInput getStartInput() {
@@ -105,8 +103,8 @@ public class SettingsWindow {
 		return downInput;
 	}
 
-	public JCheckBox getGlobalStartReset() {
-		return globalStartReset;
+	public JCheckBox getGlobalStartStop() {
+		return globalStartStop;
 	}
 
 	public JCheckBox getGlobalUpDown() {
@@ -125,7 +123,7 @@ public class SettingsWindow {
 		return keyTrigger;
 	}
 
-	public boolean isVisible() {
-		return dialog.isVisible();
+	public FlowTimer getFlowtimer() {
+		return flowtimer;
 	}
 }

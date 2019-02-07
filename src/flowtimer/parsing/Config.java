@@ -9,6 +9,7 @@ import java.util.Map;
 public class Config {
 
 	private HashMap<String, String> map;
+	private HashMap<String, String> defaultMap;
 
 	public Config(String fileName) throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -49,11 +50,27 @@ public class Config {
 		}
 		bw.close();
 	}
+	
+	public void put(String key, String value) {
+		map.put(key, value);
+	}
+	
+	public void put(String key, int value) {
+		map.put(key, String.valueOf(value));
+	}
+	
+	public void put(String key, float value) {
+		map.put(key, String.valueOf(value));
+	}
+	
+	public void put(String key, boolean value) {
+		map.put(key, String.valueOf(value));
+	}
 
 	public String getString(String entry) {
 		String result = map.get(entry);
-		if(result != null && result.charAt(0) == '$') {
-			return getString(result.substring(1));
+		if(result == null) {
+			result = defaultMap.get(entry);
 		}
 		return result;
 	}
@@ -62,35 +79,23 @@ public class Config {
 		return Integer.parseInt(getString(entry));
 	}
 
-	public double getDouble(String entry) {
-		return Double.parseDouble(getString(entry));
+	public float getFloat(String entry) {
+		return Float.parseFloat(getString(entry));
 	}
 
 	public boolean getBoolean(String entry) {
 		return Boolean.parseBoolean(getString(entry));
 	}
-
-	public String getStringWithDefault(String entry, String defaultValue) {
-		String result = getString(entry);
-		if(result == null) {
-			result = defaultValue;
-		}
-		return result;
-	}
-
-	public int getIntWithDefault(String entry, String defaultValue) {
-		return Integer.parseInt(getStringWithDefault(entry, defaultValue));
-	}
-
-	public double getDoubleWithDefault(String entry, String defaultValue) {
-		return Double.parseDouble(getStringWithDefault(entry, defaultValue));
-	}
-
-	public boolean getBooleanWithDefault(String entry, String defaultValue) {
-		return Boolean.parseBoolean(getStringWithDefault(entry, defaultValue));
-	}
 	
 	public boolean contains(String key) {
 		return map.containsKey(key);
+	}
+
+	public HashMap<String, String> getDefaultMap() {
+		return defaultMap;
+	}
+
+	public void setDefaultMap(HashMap<String, String> defaultMap) {
+		this.defaultMap = defaultMap;
 	}
 }

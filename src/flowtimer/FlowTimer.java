@@ -130,7 +130,7 @@ public class FlowTimer {
 				map.put("secondaryUpKeyName", settingsWindow.getUpInput().getSecondaryInput().getName());
 				map.put("secondaryDownKeyName", settingsWindow.getDownInput().getSecondaryInput().getName());
 
-				map.put("globalStartReset", settingsWindow.getGlobalStartReset().isSelected() + "");
+				map.put("globalStartReset", settingsWindow.getGlobalStartStop().isSelected() + "");
 				map.put("globalUpDown", settingsWindow.getGlobalUpDown().isSelected() + "");
 				map.put("visualCue", settingsWindow.getVisualCue().isSelected() + "");
 				map.put("beepSound", settingsWindow.getBeepSound().getSelectedItem() + "");
@@ -173,7 +173,7 @@ public class FlowTimer {
 		resetButton.addActionListener(e -> stopTimer());
 
 		settingsButton = new MenuButton("Settings", 2);
-		settingsButton.addActionListener(e -> settingsWindow.show());
+		settingsButton.addActionListener(e -> settingsWindow.setVisible(true));
 
 		pinLabel = new JLabel();
 		pinLabel.setBounds(413, 5, 16, 16);
@@ -192,8 +192,8 @@ public class FlowTimer {
 
 		try {
 			loadSettings();
-		} catch (Exception e1) {
-			ErrorHandler.handleException(e1, true);
+		} catch (Exception e) {
+			ErrorHandler.handleException(e, true);
 		}
 
 		tabbedPane = new JTabbedPane();
@@ -229,8 +229,8 @@ public class FlowTimer {
 
 		defaultMap.put("primaryStartKey", "-1");
 		defaultMap.put("primaryStartKeyName", "Unset");
-		defaultMap.put("primaryStopKey", "-1");
-		defaultMap.put("primaryStopKeyName", "Unset");
+		defaultMap.put("primaryResetKey", "-1");
+		defaultMap.put("primaryResetKeyName", "Unset");
 		defaultMap.put("primaryUpKey", "57416");
 		defaultMap.put("primaryUpKeyName", "Up");
 		defaultMap.put("primaryDownKey", "57424");
@@ -238,8 +238,8 @@ public class FlowTimer {
 
 		defaultMap.put("secondaryStartKey", "-1");
 		defaultMap.put("secondaryStartKeyName", "Unset");
-		defaultMap.put("secondaryStopKey", "-1");
-		defaultMap.put("secondaryStopKeyName", "Unset");
+		defaultMap.put("secondaryResetKey", "-1");
+		defaultMap.put("secondaryResetKeyName", "Unset");
 		defaultMap.put("secondaryUpKey", "-1");
 		defaultMap.put("secondaryUpKeyName", "Unset");
 		defaultMap.put("secondaryDownKey", "-1");
@@ -268,34 +268,36 @@ public class FlowTimer {
 		} else {
 			config = new Config(SETTINGS_FILE_LOCATION);
 		}
-		delayTimer.setFileSystemLocationBuffer(config.getStringWithDefault("fileSystemLocationBuffer", defaultMap.get("fileSystemLocationBuffer")));
-		delayTimer.setTimerLocationBuffer(config.getStringWithDefault("timerLocationBuffer", defaultMap.get("timerLocationBuffer")));
+		config.setDefaultMap(defaultMap);
+		
+		delayTimer.setFileSystemLocationBuffer(config.getString("fileSystemLocationBuffer"));
+		delayTimer.setTimerLocationBuffer(config.getString("timerLocationBuffer"));
 
-		visualAction.setColor(Color.decode(config.getStringWithDefault("visualCueColor", defaultMap.get("visualCueColor"))));
-		visualAction.setLength(config.getIntWithDefault("visualCueLength", defaultMap.get("visualCueLength")));
+		visualAction.setColor(Color.decode(config.getString("visualCueColor")));
+		visualAction.setLength(config.getInt("visualCueLength"));
 
-		settingsWindow.getStartInput().getPrimaryInput().set(config.getStringWithDefault("primaryStartKeyName", defaultMap.get("primaryStartKeyName")), config.getIntWithDefault("primaryStartKey", defaultMap.get("primaryStartKey")));
-		settingsWindow.getStopInput().getPrimaryInput().set(config.getStringWithDefault("primaryResetKeyName", defaultMap.get("primaryResetKeyName")), config.getIntWithDefault("primaryResetKey", defaultMap.get("primaryResetKey")));
-		settingsWindow.getUpInput().getPrimaryInput().set(config.getStringWithDefault("primaryUpKeyName", defaultMap.get("primaryUpKeyName")), config.getIntWithDefault("primaryUpKey", defaultMap.get("primaryUpKey")));
-		settingsWindow.getDownInput().getPrimaryInput().set(config.getStringWithDefault("primaryDownKeyName", defaultMap.get("primaryDownKeyName")), config.getIntWithDefault("primaryDownKey", defaultMap.get("primaryDownKey")));
+		settingsWindow.getStartInput().getPrimaryInput().set(config.getString("primaryStartKeyName"), config.getInt("primaryStartKey"));
+		settingsWindow.getStopInput().getPrimaryInput().set(config.getString("primaryResetKeyName"), config.getInt("primaryResetKey"));
+		settingsWindow.getUpInput().getPrimaryInput().set(config.getString("primaryUpKeyName"), config.getInt("primaryUpKey"));
+		settingsWindow.getDownInput().getPrimaryInput().set(config.getString("primaryDownKeyName"), config.getInt("primaryDownKey"));
 
-		settingsWindow.getStartInput().getSecondaryInput().set(config.getStringWithDefault("secondaryStartKeyName", defaultMap.get("secondaryStartKeyName")), config.getIntWithDefault("secondaryStartKey", defaultMap.get("secondaryStartKey")));
-		settingsWindow.getStopInput().getSecondaryInput().set(config.getStringWithDefault("secondaryResetKeyName", defaultMap.get("secondaryResetKeyName")), config.getIntWithDefault("secondaryResetKey", defaultMap.get("secondaryResetKey")));
-		settingsWindow.getUpInput().getSecondaryInput().set(config.getStringWithDefault("secondaryUpKeyName", defaultMap.get("secondaryUpKeyName")), config.getIntWithDefault("secondaryUpKey", defaultMap.get("secondaryUpKey")));
-		settingsWindow.getDownInput().getSecondaryInput().set(config.getStringWithDefault("secondaryDownKeyName", defaultMap.get("secondaryDownKeyName")), config.getIntWithDefault("secondaryDownKey", defaultMap.get("secondaryDownKey")));
+		settingsWindow.getStartInput().getSecondaryInput().set(config.getString("secondaryStartKeyName"), config.getInt("secondaryStartKey"));
+		settingsWindow.getStopInput().getSecondaryInput().set(config.getString("secondaryResetKeyName"), config.getInt("secondaryResetKey"));
+		settingsWindow.getUpInput().getSecondaryInput().set(config.getString("secondaryUpKeyName"), config.getInt("secondaryUpKey"));
+		settingsWindow.getDownInput().getSecondaryInput().set(config.getString("secondaryDownKeyName"), config.getInt("secondaryDownKey"));
 
-		settingsWindow.getGlobalStartReset().setSelected(config.getBooleanWithDefault("globalStartReset", defaultMap.get("globalStartReset")));
-		settingsWindow.getGlobalUpDown().setSelected(config.getBooleanWithDefault("globalUpDown", defaultMap.get("globalUpDown")));
-		settingsWindow.getVisualCue().setSelected(config.getBooleanWithDefault("visualCue", defaultMap.get("visualCue")));
-		settingsWindow.getBeepSound().setSelectedItem(config.getStringWithDefault("beepSound", defaultMap.get("beepSound")));
-		settingsWindow.getKeyTrigger().setSelectedItem(config.getStringWithDefault("key", defaultMap.get("key")));
+		settingsWindow.getGlobalStartStop().setSelected(config.getBoolean("globalStartReset"));
+		settingsWindow.getGlobalUpDown().setSelected(config.getBoolean("globalUpDown"));
+		settingsWindow.getVisualCue().setSelected(config.getBoolean("visualCue"));
+		settingsWindow.getBeepSound().setSelectedItem(config.getString("beepSound"));
+		settingsWindow.getKeyTrigger().setSelectedItem(config.getString("key"));
 
-		setPin(config.getBooleanWithDefault("pin", defaultMap.get("pin")));
+		setPin(config.getBoolean("pin"));
 
-		variableTimer.getFpsComponent().getComponent().setSelectedItem((float) config.getDoubleWithDefault("variableFps", defaultMap.get("variableFps")));
-		variableTimer.getOffsetComponent().getComponent().setText(config.getStringWithDefault("variableOffset", defaultMap.get("variableOffset")));
-		variableTimer.getIntervalComponent().getComponent().setText(config.getStringWithDefault("variableInterval", defaultMap.get("variableInterval")));
-		variableTimer.getNumBeepsComponent().getComponent().setText(config.getStringWithDefault("variableNumBeeps", defaultMap.get("variableNumBeeps")));
+		variableTimer.getFpsComponent().getComponent().setSelectedItem(config.getFloat("variableFps"));
+		variableTimer.getOffsetComponent().getComponent().setText(config.getString("variableOffset"));
+		variableTimer.getIntervalComponent().getComponent().setText(config.getString("variableInterval"));
+		variableTimer.getNumBeepsComponent().getComponent().setText(config.getString("variableNumBeeps"));
 	}
 
 	public void startTimer() {
@@ -443,13 +445,11 @@ public class FlowTimer {
 				if(frame.isFocused() && e.getKeyCode() == NativeKeyEvent.VC_ESCAPE) {
 					frame.requestFocus();
 				}
-				if(frame.isFocused() || settingsWindow.getGlobalStartReset().isSelected()) {
-					if(e.getKeyCode() == settingsWindow.getStartInput().getPrimaryInput().getKeyCode() || e.getKeyCode() == settingsWindow.getStartInput().getSecondaryInput().getKeyCode()) {
-						startTimer();
-					}
-					if(e.getKeyCode() == settingsWindow.getStopInput().getPrimaryInput().getKeyCode() || e.getKeyCode() == settingsWindow.getStopInput().getSecondaryInput().getKeyCode()) {
-						stopTimer();
-					}
+				if(settingsWindow.getStartInput().isPressed(e.getKeyCode())) {
+					startTimer();
+				}
+				if(settingsWindow.getStopInput().isPressed(e.getKeyCode())) {
+					stopTimer();
 				}
 				getSelectedTimer().onKeyEvent(e);
 			}
