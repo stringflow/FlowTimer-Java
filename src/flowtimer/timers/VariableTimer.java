@@ -1,5 +1,8 @@
 package flowtimer.timers;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -43,7 +46,7 @@ public class VariableTimer extends BaseTimer {
 		submitButton.setBounds(285, 26, 80, 22);
 		submitButton.setEnabled(false);
 		submitButton.addActionListener(e -> {
-			long passedTime = flowtimer.getTimerLabelUpdateThread().getTimerLabelCallback().getTime(flowtimer.getTimerStartTime());
+			long passedTime = (System.nanoTime() - flowtimer.getTimerStartTime()) / 1_000_000;
 			long offsets[] = { getVariableOffset() - passedTime };
 			int interval = intervalComponent.getComponent().getValue();
 			int numBeeps = numBeepsComponent.getComponent().getValue();
@@ -51,6 +54,20 @@ public class VariableTimer extends BaseTimer {
 			flowtimer.scheduleActions(offsets, interval, numBeeps, universalOffset);
 			setVariableInterface(false);
 			submitButton.setEnabled(false);
+		});
+		
+		// Click submit button when enter is hit while editing the frame text field
+		frameComponent.getComponent().addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {
+			}
+			
+			public void keyReleased(KeyEvent e) {
+			}
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					submitButton.doClick();
+				}
+			}
 		});
 		
 		frameComponent.add(this);
