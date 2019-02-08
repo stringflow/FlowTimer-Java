@@ -1,2 +1,5 @@
 # output files
 bin/*
+
+# debug files
+traceback.txt

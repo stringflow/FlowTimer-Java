@@ -172,8 +172,6 @@ public class FlowTimer {
 		soundAction = new SoundAction(this, 0);
 		visualAction = new VisualAction(this, null);
 
-		loadSettings();
-
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(e -> {
 			BaseTimer tab = getSelectedTimer();
@@ -185,6 +183,10 @@ public class FlowTimer {
 			tab.add(pinLabel);
 			tab.onLoad();
 		});
+		
+		loadSettings();
+		delayTimer.loadTimers();
+		
 		tabbedPane.addTab("Fixed Offset", delayTimer);
 		tabbedPane.addTab("Variable Offset", variableTimer);
 		tabbedPane.setBounds(0, 0, WIDTH, HEIGHT);

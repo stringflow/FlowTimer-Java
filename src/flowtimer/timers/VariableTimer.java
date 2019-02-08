@@ -88,6 +88,7 @@ public class VariableTimer extends BaseTimer {
 
 	public void onLoad() {
 		flowtimer.setTimerLabel(0);
+		flowtimer.setSize(FlowTimer.WIDTH, 228);
 	}
 
 	public void onTimerStart(long startTime) {

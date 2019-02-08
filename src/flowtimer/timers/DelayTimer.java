@@ -94,6 +94,16 @@ public class DelayTimer extends BaseTimer {
 	}
 
 	public void onLoad() {
+		flowtimer.setTimerLabel(0);
+		selectedTimer.select();
+		resizeWindow();
+	}
+
+	private void addDefaultTimer(boolean addRemoveButton) {
+		addTimer("Timer", "5000", 500, 5, addRemoveButton);
+	}
+	
+	public void loadTimers() {
 		if(!new File(timerLocationBuffer).exists()) {
 			if(!timerLocationBuffer.equals("null")) {
 				JOptionPane.showMessageDialog(flowtimer.getFrame(), "Unable to load the latest timer file.");
@@ -103,13 +113,6 @@ public class DelayTimer extends BaseTimer {
 		} else {
 			loadTimers(timerLocationBuffer, false);
 		}
-
-		flowtimer.setTimerLabel(0);
-		selectedTimer.select();
-	}
-
-	private void addDefaultTimer(boolean addRemoveButton) {
-		addTimer("Timer", "5000", 500, 5, addRemoveButton);
 	}
 
 	public void addTimer(String name, String offset, long interval, int numBeeps, boolean addRemoveButton) {
@@ -152,9 +155,13 @@ public class DelayTimer extends BaseTimer {
 		int addButtonX = ADD_BUTTON_BASE_X;
 		int addButtonY = ADD_BUTTON_BASE_Y + (addButton.getHeight() + ADD_BUTTON_PADDING) * timers.size();
 		addButton.setBounds(addButtonX, addButtonY, addButton.getWidth(), addButton.getHeight());
-		flowtimer.setSize(flowtimer.getFrame().getWidth(), Math.max(FlowTimer.HEIGHT, 25 * (timers.size() + 5) + 12));
+		resizeWindow();
 	}
 
+	private void resizeWindow() {
+		flowtimer.setSize(flowtimer.getFrame().getWidth(), Math.max(FlowTimer.HEIGHT, 25 * (timers.size() + 5) + 12));		
+	}
+	
 	public void onTimerStart(long startTime) {
 		runningTimer = selectedTimer;
 		flowtimer.scheduleActions(runningTimer.getOffsets(), runningTimer.getInterval(), runningTimer.getNumBeeps(), 0);
