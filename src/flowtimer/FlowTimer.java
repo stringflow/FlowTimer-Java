@@ -173,6 +173,7 @@ public class FlowTimer {
 		visualAction = new VisualAction(this, null);
 
 		tabbedPane = new JTabbedPane();
+		tabbedPane.setBounds(0, 0, WIDTH, HEIGHT);
 		tabbedPane.addChangeListener(e -> {
 			BaseTimer tab = getSelectedTimer();
 			tab.add(timerLabel);
@@ -189,7 +190,6 @@ public class FlowTimer {
 		
 		tabbedPane.addTab("Fixed Offset", delayTimer);
 		tabbedPane.addTab("Variable Offset", variableTimer);
-		tabbedPane.setBounds(0, 0, WIDTH, HEIGHT);
 
 		frame.add(tabbedPane);
 
