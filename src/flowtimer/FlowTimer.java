@@ -66,19 +66,15 @@ public class FlowTimer {
 	private VisualAction visualAction;
 	private ArrayList<Action> actions;
 
-	public FlowTimer() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	public FlowTimer() throws Exception {
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-			OpenAL.init();
-			Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-			logger.setLevel(Level.OFF);
-			logger.setUseParentHandlers(false);
-			GlobalScreen.registerNativeHook();
-			GlobalScreen.addNativeKeyListener(new GlobalScreenListener());
-		} catch (Exception e) {
-			ErrorHandler.handleException(e, true);
-		}
+		OpenAL.init();
+		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		logger.setLevel(Level.OFF);
+		logger.setUseParentHandlers(false);
+		GlobalScreen.registerNativeHook();
+		GlobalScreen.addNativeKeyListener(new GlobalScreenListener());
 
 		frame = new JFrame();
 		frame.setSize(WIDTH, HEIGHT);
@@ -176,11 +172,7 @@ public class FlowTimer {
 		soundAction = new SoundAction(this, 0);
 		visualAction = new VisualAction(this, null);
 
-		try {
-			loadSettings();
-		} catch (Exception e) {
-			ErrorHandler.handleException(e, true);
-		}
+		loadSettings();
 
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(e -> {
@@ -203,7 +195,6 @@ public class FlowTimer {
 	}
 
 	private void loadSettings() throws Exception {
-
 		settingsWindow = new SettingsWindow(this);
 
 		HashMap<String, String> defaultMap = new HashMap<>();
@@ -395,7 +386,11 @@ public class FlowTimer {
 	}
 
 	public static void main(String[] args) {
-		new FlowTimer();
+		try {
+			new FlowTimer();
+		} catch (Exception e) {
+			ErrorHandler.handleException(e, true);
+		}
 	}
 
 	public class GlobalScreenListener implements NativeKeyListener {

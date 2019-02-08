@@ -1,5 +1,8 @@
 package flowtimer.settings;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -87,6 +90,14 @@ public class SettingsWindow extends JDialog {
 		
 		keyTriggerLabel = new JLabel("Key:");
 		keyTriggerLabel.setBounds(10, 130, 50, 20);
+		
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				if(visualCueLength.getText().trim().isEmpty()) {
+					visualCueLength.setValue(20);
+				}
+			}
+		});
 
 		add(globalStartStop);
 		add(globalUpDown);
