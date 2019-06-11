@@ -7,6 +7,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -39,8 +42,9 @@ public class FlowTimer {
 	public static final int WIDTH = 451;
 	public static final int HEIGHT = 287;
 	public static final String TITLE = "FlowTimer 1.6";
-	public static final String SETTINGS_FILE_LOCATION = System.getenv("appdata") + "\\flowtimer.config";
-	public static final File SETTINGS_FILE = new File(SETTINGS_FILE_LOCATION);
+	public static final File MAIN_FOLDER = new File(System.getenv("appdata") + "\\flowtimer");
+	public static final File SETTINGS_FILE = new File(MAIN_FOLDER.getPath() + "\\flowtimer.config");
+	public static final File IMPORTED_BEEPS_FOLDER = new File(MAIN_FOLDER.getPath() + "\\beeps");
 
 	private JFrame frame;
 	private JTabbedPane tabbedPane;
@@ -93,6 +97,7 @@ public class FlowTimer {
 				HashMap<String, String> map = new HashMap<>();
 				map.put("fileSystemLocationBuffer", delayTimer.getFileSystemLocationBuffer());
 				map.put("timerLocationBuffer", delayTimer.getTimerLocationBuffer());
+				map.put("beepImportLocationBuffer", settingsWindow.getBeepImportLocationBuffer());
 
 				map.put("primaryStartKey", settingsWindow.getStartInput().getPrimaryInput().getKeyCode() + "");
 				map.put("primaryResetKey", settingsWindow.getStopInput().getPrimaryInput().getKeyCode() + "");
@@ -135,7 +140,7 @@ public class FlowTimer {
 
 				Config config = new Config(map);
 				try {
-					config.write(SETTINGS_FILE_LOCATION);
+					config.write(SETTINGS_FILE.getAbsolutePath());
 				} catch (Exception e1) {
 					ErrorHandler.handleException(e1, false);
 				}
@@ -197,10 +202,9 @@ public class FlowTimer {
 	}
 
 	private void loadSettings() throws Exception {
-		settingsWindow = new SettingsWindow(this);
-
 		HashMap<String, String> defaultMap = new HashMap<>();
 		defaultMap.put("fileSystemLocationBuffer", System.getProperty("user.home") + "\\Desktop");
+		defaultMap.put("beepImportLocationBuffer", defaultMap.get("fileSystemLocationBuffer"));
 		defaultMap.put("timerLocationBuffer", "null");
 
 		defaultMap.put("primaryStartKey", "-1");
@@ -236,16 +240,32 @@ public class FlowTimer {
 		defaultMap.put("variableOffset", "0");
 		defaultMap.put("variableInterval", "500");
 		defaultMap.put("variableNumBeeps", "5");
-
+		
+		if(!MAIN_FOLDER.exists()) {
+			MAIN_FOLDER.mkdirs();
+		}
+		if(!IMPORTED_BEEPS_FOLDER.exists()) {
+			IMPORTED_BEEPS_FOLDER.mkdirs();
+		}
+		
+		// 1.7 file migration
+		File oldSettings = new File(System.getenv("appdata") + "\\flowtimer.config");
+		if(oldSettings.exists() && !SETTINGS_FILE.exists()) {
+			Files.copy(Paths.get(oldSettings.getAbsolutePath()), Paths.get(SETTINGS_FILE.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+			oldSettings.delete();
+		}
+		
 		Config config;
 		if(!SETTINGS_FILE.exists()) {
 			config = new Config(defaultMap);
-			config.write(SETTINGS_FILE_LOCATION);
+			config.write(SETTINGS_FILE.getAbsolutePath());
 		} else {
-			config = new Config(SETTINGS_FILE_LOCATION);
+			config = new Config(SETTINGS_FILE.getAbsolutePath());
 		}
 		config.setDefaultMap(defaultMap);
 
+		settingsWindow = new SettingsWindow(this);
+		
 		delayTimer.setFileSystemLocationBuffer(config.getString("fileSystemLocationBuffer"));
 		delayTimer.setTimerLocationBuffer(config.getString("timerLocationBuffer"));
 
@@ -265,8 +285,10 @@ public class FlowTimer {
 		settingsWindow.getGlobalStartStop().setSelected(config.getBoolean("globalStartReset"));
 		settingsWindow.getGlobalUpDown().setSelected(config.getBoolean("globalUpDown"));
 		settingsWindow.getVisualCue().setSelected(config.getBoolean("visualCue"));
-		settingsWindow.getBeepSound().setSelectedItem(config.getString("beepSound"));
+		settingsWindow.setBeepSound(config.getString("beepSound"));
 		settingsWindow.getKeyTrigger().setSelectedItem(config.getString("key"));
+		
+		settingsWindow.setBeepImportLocationBuffer(config.getString("beepImportLocationBuffer"));
 
 		setPin(config.getBoolean("pin"));
 

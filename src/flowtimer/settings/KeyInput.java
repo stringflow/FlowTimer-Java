@@ -98,6 +98,7 @@ public class KeyInput {
 			waitDialog = new JDialog(parent, "", ModalityType.APPLICATION_MODAL);
 			waitDialog.setSize(100, 75);
 			waitDialog.setLocationRelativeTo(null);
+			waitDialog.setResizable(false);
 		
 			JLabel label = new JLabel("Press any button...");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
