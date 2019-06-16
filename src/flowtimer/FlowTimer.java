@@ -35,6 +35,7 @@ import flowtimer.parsing.Config;
 import flowtimer.settings.KeyInput;
 import flowtimer.settings.SettingsWindow;
 import flowtimer.timers.BaseTimer;
+import flowtimer.timers.CalibrationTimer;
 import flowtimer.timers.DelayTimer;
 import flowtimer.timers.VariableTimer;
 
@@ -53,6 +54,7 @@ public class FlowTimer {
 
 	private DelayTimer delayTimer;
 	private VariableTimer variableTimer;
+	private CalibrationTimer calibrationTimer;
 	
 	private Config config;
 
@@ -136,7 +138,7 @@ public class FlowTimer {
 				map.put("pin", frame.isAlwaysOnTop() + "");
 				map.put("key", settingsWindow.getKeyTrigger().getSelectedItem() + "");
 				map.put("darkmode", settingsWindow.getDarkMode().isSelected() + "");
-
+				
 				map.put("variableFps", variableTimer.getFpsComponent().getComponent().getSelectedItem() + "");
 				if(variableTimer.getOffsetComponent().getComponent().isValidInt()) {
 					map.put("variableOffset", variableTimer.getOffsetComponent().getComponent().getValue() + "");
@@ -148,6 +150,14 @@ public class FlowTimer {
 					map.put("variableNumBeeps", variableTimer.getNumBeepsComponent().getComponent().getValue() + "");
 				}
 
+				map.put("calibrationFps", calibrationTimer.getFps() + "");
+				if(calibrationTimer.getIntervalComponent().getComponent().isValidInt()) {
+					map.put("calibrationInterval", calibrationTimer.getIntervalComponent().getComponent().getValue() + "");
+				}
+				if(calibrationTimer.getBeepsComponent().getComponent().isValidInt()) {
+					map.put("calibrationNumBeeps", calibrationTimer.getBeepsComponent().getComponent().getValue() + "");
+				}
+				
 				Config config = new Config(map);
 				try {
 					config.write(SETTINGS_FILE.getAbsolutePath());
@@ -182,6 +192,7 @@ public class FlowTimer {
 
 		delayTimer = new DelayTimer(this);
 		variableTimer = new VariableTimer(this);
+		calibrationTimer = new CalibrationTimer(this);
 
 		actions = new ArrayList<>();
 		soundAction = new SoundAction(this, 0);
@@ -205,6 +216,7 @@ public class FlowTimer {
 
 		tabbedPane.addTab("Fixed Offset", delayTimer);
 		tabbedPane.addTab("Variable Offset", variableTimer);
+		tabbedPane.addTab("Offset Calibration", calibrationTimer);
 
 		frame.add(tabbedPane);
 
@@ -251,6 +263,10 @@ public class FlowTimer {
 		defaultMap.put("variableOffset", "0");
 		defaultMap.put("variableInterval", "500");
 		defaultMap.put("variableNumBeeps", "5");
+		
+		defaultMap.put("calibrationFps", "60.0");
+		defaultMap.put("calibrationInterval", "500");
+		defaultMap.put("calibrationNumBeeps", "5");
 
 		if(!MAIN_FOLDER.exists()) {
 			MAIN_FOLDER.mkdirs();
@@ -316,6 +332,10 @@ public class FlowTimer {
 		variableTimer.getOffsetComponent().getComponent().setText(config.getString("variableOffset"));
 		variableTimer.getIntervalComponent().getComponent().setText(config.getString("variableInterval"));
 		variableTimer.getNumBeepsComponent().getComponent().setText(config.getString("variableNumBeeps"));
+		
+		calibrationTimer.getFpsComponent().getComponent().setSelectedItem(config.getDouble("calibrationFps"));
+		calibrationTimer.getIntervalComponent().getComponent().setText(config.getString("calibrationInterval"));
+		calibrationTimer.getBeepsComponent().getComponent().setText(config.getString("calibrationNumBeeps"));
 	}
 
 	public void startTimer() {

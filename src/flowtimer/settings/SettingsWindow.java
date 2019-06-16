@@ -1,6 +1,5 @@
 package flowtimer.settings;
 
-import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -20,7 +19,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import flowtimer.ErrorHandler;

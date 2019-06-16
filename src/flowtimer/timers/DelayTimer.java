@@ -108,7 +108,7 @@ public class DelayTimer extends BaseTimer {
 	public void loadTimers() {
 		if(!new File(timerLocationBuffer).exists()) {
 			if(!timerLocationBuffer.equals("null")) {
-				JOptionPane.showMessageDialog(flowtimer.getFrame(), "Unable to load the latest timer file.");
+				JOptionPane.showMessageDialog(flowtimer.getFrame(), "Unable to load the last timer file.");
 				timerLocationBuffer = "null";
 			}
 			addDefaultTimer(false);

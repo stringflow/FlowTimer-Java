@@ -1,6 +1,9 @@
 package flowtimer.parsing;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -81,6 +84,10 @@ public class Config {
 
 	public float getFloat(String entry) {
 		return Float.parseFloat(getString(entry));
+	}
+	
+	public double getDouble(String entry) {
+		return Double.parseDouble(getString(entry));
 	}
 
 	public boolean getBoolean(String entry) {
