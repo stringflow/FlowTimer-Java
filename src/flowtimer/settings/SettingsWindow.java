@@ -1,5 +1,6 @@
 package flowtimer.settings;
 
+import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -50,6 +52,7 @@ public class SettingsWindow extends JDialog {
 	private JLabel keyTriggerLabel;
 	private JComboBox<String> keyTrigger;
 	private JButton importBeepButton;
+	private JButton visualCueColorButton;
 	private JCheckBox darkMode;
 
 	private String beepImportLocationBuffer;
@@ -128,12 +131,12 @@ public class SettingsWindow extends JDialog {
 					File file = fileChooser.getSelectedFile();
 					String fileName = file.getName().split("\\.")[0];
 					if(Arrays.stream(defaultBeeps).anyMatch(fileName::equalsIgnoreCase)) {
-						JOptionPane.showMessageDialog(null, "This file name is already in use by a default beep.", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this, "This file name is already in use by a default beep.", "Error", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					boolean overwrite = allBeepSounds.stream().anyMatch(fileName::equalsIgnoreCase);
 					if(overwrite) {
-						if(JOptionPane.showConfirmDialog(null, "This file name is already in use by a custom beep. Do you want to overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+						if(JOptionPane.showConfirmDialog(this, "This file name is already in use by a custom beep. Do you want to overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
 							return;
 						}
 					}
@@ -142,10 +145,19 @@ public class SettingsWindow extends JDialog {
 					if(!overwrite) {
 						beepSound.addItem(fileName);
 					}
-					JOptionPane.showMessageDialog(null, "Beep sound successfully imported.", "Success", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(this, "Beep sound successfully imported.", "Success", JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(null, "Beep sound failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "Beep sound failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
+			}
+		});
+		
+		visualCueColorButton = new JButton("Visual Cue Color");
+		visualCueColorButton.setBounds(155, 131, 110, 23);
+		visualCueColorButton.addActionListener(e -> {
+			Color newColor = JColorChooser.showDialog(this, "Pick a color", flowtimer.getVisualAction().getColor());
+			if(newColor != null) {
+				flowtimer.getVisualAction().setColor(newColor);
 			}
 		});
 
@@ -167,7 +179,7 @@ public class SettingsWindow extends JDialog {
 		});
 
 		darkMode.addActionListener(e -> {
-			JOptionPane.showMessageDialog(null, "FlowTimer needs to be restarted in order for this change to take effect.");
+			JOptionPane.showMessageDialog(this, "FlowTimer needs to be restarted in order for this change to take effect.");
 		});
 
 		add(globalStartStop);
@@ -180,6 +192,7 @@ public class SettingsWindow extends JDialog {
 		add(visualCueLengthLabel);
 		add(visualCueLength);
 		add(importBeepButton);
+		add(visualCueColorButton);
 		add(darkMode);
 	}
 
