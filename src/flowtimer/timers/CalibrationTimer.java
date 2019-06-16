@@ -11,6 +11,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -39,6 +40,7 @@ public class CalibrationTimer extends BaseTimer {
 	private JButton enter;
 	private JLabel percentageLabel;
 	private JTextArea resultsArea;
+	private JScrollPane scrollPane;
 
 	private HashMap<Integer, ArrayDeque<Integer>> framesHit;
 
@@ -76,8 +78,10 @@ public class CalibrationTimer extends BaseTimer {
 		restartButton.setBounds(CalibrationComponent.X_BASE + 80, 152, 80, 20);
 		useRecommendation.setBounds(currentOffsetComponent.getX() + 85, currentOffsetComponent.getY(), 100, 20);
 		enter.setBounds(actualFrameComponent.getX() + 85, actualFrameComponent.getY(), 100, 20);
-		percentageLabel.setBounds(90, 195, FlowTimer.WIDTH - 40, 180);
-		resultsArea.setBounds(10, 345, FlowTimer.WIDTH - 40, 80);
+		percentageLabel.setBounds(150, 195, FlowTimer.WIDTH - 40, 180);
+		
+		scrollPane = new JScrollPane(resultsArea);
+		scrollPane.setBounds(150, 345, 265, 100);
 
 		startButton.setEnabled(false);
 		restartButton.setEnabled(false);
@@ -148,7 +152,7 @@ public class CalibrationTimer extends BaseTimer {
 	}
 
 	public void onLoad() {
-		flowtimer.setSize(flowtimer.getFrame().getWidth(), FlowTimer.HEIGHT + 205);
+		flowtimer.setSize(flowtimer.getFrame().getWidth(), FlowTimer.HEIGHT + 230);
 	}
 
 	public void onTimerStart(long startTime) {
@@ -205,7 +209,7 @@ public class CalibrationTimer extends BaseTimer {
 			add(useRecommendation);
 			add(enter);
 			add(percentageLabel);
-			add(resultsArea);
+			add(scrollPane);
 			currentOffsetComponent.getComponent().setText(initialOffsetComponent.getComponent().getText());
 			useRecommendation.setText("Use " + initialOffsetComponent.getComponent().getText());
 			framesHit.clear();
@@ -220,7 +224,7 @@ public class CalibrationTimer extends BaseTimer {
 			remove(useRecommendation);
 			remove(enter);
 			remove(percentageLabel);
-			remove(resultsArea);
+			remove(scrollPane);
 		}
 		repaint();
 	}
