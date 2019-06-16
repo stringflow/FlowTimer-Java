@@ -53,6 +53,8 @@ public class FlowTimer {
 
 	private DelayTimer delayTimer;
 	private VariableTimer variableTimer;
+	
+	private Config config;
 
 	private JLabel timerLabel;
 	private VisualPanel visualPanel;
@@ -72,8 +74,8 @@ public class FlowTimer {
 	private ArrayList<Action> actions;
 
 	public FlowTimer() throws Exception {
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
+		initSwing();
+		
 		OpenAL.init();
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 		logger.setLevel(Level.OFF);
@@ -133,6 +135,7 @@ public class FlowTimer {
 				map.put("visualCueLength", settingsWindow.getVisualCueLength().getValue() + "");
 				map.put("pin", frame.isAlwaysOnTop() + "");
 				map.put("key", settingsWindow.getKeyTrigger().getSelectedItem() + "");
+				map.put("darkmode", settingsWindow.getDarkMode().isSelected() + "");
 
 				map.put("variableFps", variableTimer.getFpsComponent().getComponent().getSelectedItem() + "");
 				if(variableTimer.getOffsetComponent().getComponent().isValidInt()) {
@@ -207,8 +210,8 @@ public class FlowTimer {
 
 		frame.repaint();
 	}
-
-	private void loadSettings() throws Exception {
+	
+	private void initSwing() throws Exception {
 		HashMap<String, String> defaultMap = new HashMap<>();
 		defaultMap.put("fileSystemLocationBuffer", System.getProperty("user.home") + "\\Desktop");
 		defaultMap.put("beepImportLocationBuffer", defaultMap.get("fileSystemLocationBuffer"));
@@ -236,6 +239,7 @@ public class FlowTimer {
 		defaultMap.put("globalUpDown", "true");
 		defaultMap.put("visualCue", "false");
 		defaultMap.put("beepSound", "ping1");
+		defaultMap.put("darkMode", "false");
 
 		defaultMap.put("visualCueColor", "#000000");
 		defaultMap.put("visualCueLength", "20");
@@ -262,7 +266,6 @@ public class FlowTimer {
 			oldSettings.delete();
 		}
 
-		Config config;
 		if(!SETTINGS_FILE.exists()) {
 			config = new Config(defaultMap);
 			config.write(SETTINGS_FILE.getAbsolutePath());
@@ -270,7 +273,16 @@ public class FlowTimer {
 			config = new Config(SETTINGS_FILE.getAbsolutePath());
 		}
 		config.setDefaultMap(defaultMap);
+		
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		if(config.getBoolean("darkmode")) {
+			Font font = (Font) UIManager.get("Label.font");
+			UIManager.setLookAndFeel("com.jtattoo.plaf.noire.NoireLookAndFeel");
+			UIManager.put("Label.font", font);
+		}
+	}
 
+	private void loadSettings() throws Exception {
 		settingsWindow = new SettingsWindow(this);
 
 		delayTimer.setFileSystemLocationBuffer(config.getString("fileSystemLocationBuffer"));
@@ -294,6 +306,7 @@ public class FlowTimer {
 		settingsWindow.getVisualCue().setSelected(config.getBoolean("visualCue"));
 		settingsWindow.setBeepSound(config.getString("beepSound"));
 		settingsWindow.getKeyTrigger().setSelectedItem(config.getString("key"));
+		settingsWindow.getDarkMode().setSelected(config.getBoolean("darkmode"));
 
 		settingsWindow.setBeepImportLocationBuffer(config.getString("beepImportLocationBuffer"));
 

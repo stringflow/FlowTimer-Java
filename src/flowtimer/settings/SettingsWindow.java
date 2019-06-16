@@ -1,5 +1,6 @@
 package flowtimer.settings;
 
+import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -19,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import flowtimer.ErrorHandler;
@@ -31,7 +33,7 @@ public class SettingsWindow extends JDialog {
 	private static final long serialVersionUID = 6382472812309191157L;
 
 	public static final int WIDTH = 290;
-	public static final int HEIGHT = 260;
+	public static final int HEIGHT = 280;
 	public static final String TITLE = "FlowTimer 1.6 - Settings";
 
 	private FlowTimer flowtimer;
@@ -50,6 +52,7 @@ public class SettingsWindow extends JDialog {
 	private JLabel keyTriggerLabel;
 	private JComboBox<String> keyTrigger;
 	private JButton importBeepButton;
+	private JCheckBox darkMode;
 
 	private String beepImportLocationBuffer;
 
@@ -66,10 +69,12 @@ public class SettingsWindow extends JDialog {
 		visualCue = new JCheckBox("Visual Cue");
 		globalStartStop = new JCheckBox("Global Start/Stop");
 		globalUpDown = new JCheckBox("Global Up/Down");
+		darkMode = new JCheckBox("Dark Mode");
 
 		visualCue.setBounds(5, 155, 120, 20);
-		globalStartStop.setBounds(5, 175, 120, 20);
+		globalStartStop.setBounds(5, 175, 130, 20);
 		globalUpDown.setBounds(5, 195, 120, 20);
+		darkMode.setBounds(5, 215, 120, 20);
 
 		visualCueLengthLabel = new JLabel("Visual Length:");
 		visualCueLengthLabel.setBounds(138, 155, 120, 20);
@@ -163,6 +168,10 @@ public class SettingsWindow extends JDialog {
 			}
 		});
 
+		darkMode.addActionListener(e -> {
+			JOptionPane.showMessageDialog(null, "FlowTimer needs to be restarted in order for this change to take effect.");
+		});
+
 		add(globalStartStop);
 		add(globalUpDown);
 		add(visualCue);
@@ -173,6 +182,7 @@ public class SettingsWindow extends JDialog {
 		add(visualCueLengthLabel);
 		add(visualCueLength);
 		add(importBeepButton);
+		add(darkMode);
 	}
 
 	public KeyInput getStartInput() {
@@ -215,6 +225,10 @@ public class SettingsWindow extends JDialog {
 		return visualCueLength;
 	}
 
+	public JCheckBox getDarkMode() {
+		return darkMode;
+	}
+
 	public void setVisualCueLength(IntTextField visualCueLength) {
 		this.visualCueLength = visualCueLength;
 	}
@@ -246,4 +260,5 @@ public class SettingsWindow extends JDialog {
 		}
 		return result;
 	}
+
 }
