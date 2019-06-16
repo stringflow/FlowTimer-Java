@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 public class ErrorHandler {
 
 	public static void handleException(Exception e, boolean deleteSettings) {
-		JOptionPane.showMessageDialog(null, "An error has occured when loading the settings file, please send the traceback.txt file to the developer for further help.", "Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, "An error has occured, please send the traceback.txt file to the developer for further help.", "Error", JOptionPane.ERROR_MESSAGE);
 		try {
 			PrintWriter writer = new PrintWriter("traceback.txt");
 			e.printStackTrace(writer);

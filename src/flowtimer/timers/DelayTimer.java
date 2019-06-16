@@ -59,6 +59,8 @@ public class DelayTimer extends BaseTimer {
 	private ColumnLabel intervalLabel;
 	private ColumnLabel numBeepsLabel;
 
+	private LinkedList<TimerEntry> lastLoadedTimers;
+
 	public DelayTimer(FlowTimer flowtimer) {
 		super(flowtimer);
 
@@ -102,7 +104,7 @@ public class DelayTimer extends BaseTimer {
 	private void addDefaultTimer(boolean addRemoveButton) {
 		addTimer("Timer", "5000", 500, 5, addRemoveButton);
 	}
-	
+
 	public void loadTimers() {
 		if(!new File(timerLocationBuffer).exists()) {
 			if(!timerLocationBuffer.equals("null")) {
@@ -159,9 +161,9 @@ public class DelayTimer extends BaseTimer {
 	}
 
 	private void resizeWindow() {
-		flowtimer.setSize(flowtimer.getFrame().getWidth(), Math.max(FlowTimer.HEIGHT, 25 * (timers.size() + 5) + 12));		
+		flowtimer.setSize(flowtimer.getFrame().getWidth(), Math.max(FlowTimer.HEIGHT, 25 * (timers.size() + 5) + 12));
 	}
-	
+
 	public void onTimerStart(long startTime) {
 		runningTimer = selectedTimer;
 		flowtimer.scheduleActions(runningTimer.getOffsets(), runningTimer.getInterval(), runningTimer.getNumBeeps(), 0);
@@ -192,7 +194,7 @@ public class DelayTimer extends BaseTimer {
 	public boolean canStartTimer() {
 		return selectedTimer != null;
 	}
-	
+
 	private void setInterface(boolean enabled) {
 		timers.forEach(timer -> timer.setElements(enabled));
 		saveTimersButton.setEnabled(enabled);
@@ -201,7 +203,7 @@ public class DelayTimer extends BaseTimer {
 		addButton.setEnabled(enabled);
 	}
 
-	private void onSaveTimersPress() {
+	public void onSaveTimersPress() {
 		if(timerLocationBuffer.equals("null")) {
 			onSaveTimersAsPress();
 		} else {
@@ -209,7 +211,7 @@ public class DelayTimer extends BaseTimer {
 		}
 	}
 
-	private void onSaveTimersAsPress() {
+	public void onSaveTimersAsPress() {
 		JFileChooser fileChooser = new JFileChooser(fileSystemLocationBuffer);
 		fileChooser.setDialogTitle("Save Timers");
 		int result = fileChooser.showSaveDialog(flowtimer.getFrame());
@@ -240,7 +242,7 @@ public class DelayTimer extends BaseTimer {
 		JOptionPane.showMessageDialog(null, "Timers successfully saved to " + filePath, "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	private void onLoadTimersPress() {
+	public void onLoadTimersPress() {
 		JFileChooser fileChooser = new JFileChooser(fileSystemLocationBuffer);
 		fileChooser.setDialogTitle("Load Timers");
 		fileChooser.setFileFilter(new FileNameExtensionFilter(".json files", "json"));
@@ -253,13 +255,13 @@ public class DelayTimer extends BaseTimer {
 	}
 
 	private void loadTimers(String filePath, boolean showSuccessMessage) {
-		LinkedList<TimerEntry> loadedList = new LinkedList<>();
+		lastLoadedTimers = new LinkedList<>();
 		try {
 			List<JSONValue> jsonTimers = new JSON(new File(filePath)).get().asArray();
 			int index = 0;
 			for(JSONValue jsonTimer : jsonTimers) {
 				Map<String, JSONValue> timer = jsonTimer.asObject();
-				loadedList.add(new TimerEntry(index++, timer.get("name").asString(), timer.get("offsets").asString(), timer.get("interval").asLong(), timer.get("numBeeps").asInt(), timer.get("removeButton").asBoolean()));
+				lastLoadedTimers.add(new TimerEntry(index++, timer.get("name").asString(), timer.get("offsets").asString(), timer.get("interval").asLong(), timer.get("numBeeps").asInt(), timer.get("removeButton").asBoolean()));
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Timers failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -267,12 +269,29 @@ public class DelayTimer extends BaseTimer {
 		}
 		LinkedList<TimerEntry> currentTimers = new LinkedList<>(timers);
 		currentTimers.forEach(timer -> removeTimer(timer));
-		loadedList.forEach(timer -> addNewTimer(timer));
+		for(int i = 0; i < lastLoadedTimers.size(); i++) {
+			addNewTimer(new TimerEntry(i, lastLoadedTimers.get(i)));
+		}
 		timers.getFirst().select();
 		timerLocationBuffer = filePath;
 		if(showSuccessMessage) {
 			JOptionPane.showMessageDialog(null, "Timers successfully loaded.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
+	}
+
+	public boolean haveTimersChanged() {
+		if(lastLoadedTimers == null) {
+			return true;
+		}
+		if(lastLoadedTimers.size() != timers.size()) {
+			return true;
+		}
+		for(int i = 0; i < lastLoadedTimers.size(); i++) {
+			if(!lastLoadedTimers.get(i).equals(timers.get(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getTimerLocationBuffer() {
@@ -368,6 +387,10 @@ public class DelayTimer extends BaseTimer {
 			numBeepsField.getDocument().addDocumentListener(new TimerEntryDocumentListener(this));
 		}
 
+		public TimerEntry(int index, TimerEntry other) {
+			this(index, other.getName(), other.getOffsetsString(), other.getInterval(), other.getNumBeeps(), other.hasRemoveButton());
+		}
+
 		public void recalcPosition(int index) {
 			int xIndex = 0;
 			setFieldPosition(nameField, xIndex++, index);
@@ -461,6 +484,11 @@ public class DelayTimer extends BaseTimer {
 				}
 			}
 			return true;
+		}
+
+		public boolean equals(Object obj) {
+			TimerEntry other = (TimerEntry) obj;
+			return other.getName().equalsIgnoreCase(getName()) && other.getOffsetsString().equalsIgnoreCase(getOffsetsString()) && other.getNumBeeps() == getNumBeeps() && other.getInterval() == getInterval();
 		}
 	}
 

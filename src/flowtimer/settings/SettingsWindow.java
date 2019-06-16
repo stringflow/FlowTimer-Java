@@ -130,7 +130,7 @@ public class SettingsWindow extends JDialog {
 					}
 					boolean overwrite = allBeepSounds.stream().anyMatch(fileName::equalsIgnoreCase);
 					if(overwrite) {
-						if(JOptionPane.showConfirmDialog(null, "This file name is already in use by a custom beep. Do you want to overwrite?", "Overwrite?", JOptionPane.ERROR_MESSAGE) != JOptionPane.YES_OPTION) {
+						if(JOptionPane.showConfirmDialog(null, "This file name is already in use by a custom beep. Do you want to overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
 							return;
 						}
 					}

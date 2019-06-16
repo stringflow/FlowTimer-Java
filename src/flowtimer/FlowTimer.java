@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
@@ -92,6 +93,12 @@ public class FlowTimer {
 
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
+				if(delayTimer.haveTimersChanged()) {
+					if(JOptionPane.showConfirmDialog(null, "You’ve changed your timers without saving. Would you like to save your timers?", "Save timers?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						delayTimer.onSaveTimersPress();
+					}
+				}
+
 				OpenAL.dispose();
 
 				HashMap<String, String> map = new HashMap<>();
@@ -189,10 +196,10 @@ public class FlowTimer {
 			tab.add(pinLabel);
 			tab.onLoad();
 		});
-		
+
 		loadSettings();
 		delayTimer.loadTimers();
-		
+
 		tabbedPane.addTab("Fixed Offset", delayTimer);
 		tabbedPane.addTab("Variable Offset", variableTimer);
 
@@ -240,21 +247,21 @@ public class FlowTimer {
 		defaultMap.put("variableOffset", "0");
 		defaultMap.put("variableInterval", "500");
 		defaultMap.put("variableNumBeeps", "5");
-		
+
 		if(!MAIN_FOLDER.exists()) {
 			MAIN_FOLDER.mkdirs();
 		}
 		if(!IMPORTED_BEEPS_FOLDER.exists()) {
 			IMPORTED_BEEPS_FOLDER.mkdirs();
 		}
-		
+
 		// 1.7 file migration
 		File oldSettings = new File(System.getenv("appdata") + "\\flowtimer.config");
 		if(oldSettings.exists() && !SETTINGS_FILE.exists()) {
 			Files.copy(Paths.get(oldSettings.getAbsolutePath()), Paths.get(SETTINGS_FILE.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
 			oldSettings.delete();
 		}
-		
+
 		Config config;
 		if(!SETTINGS_FILE.exists()) {
 			config = new Config(defaultMap);
@@ -265,7 +272,7 @@ public class FlowTimer {
 		config.setDefaultMap(defaultMap);
 
 		settingsWindow = new SettingsWindow(this);
-		
+
 		delayTimer.setFileSystemLocationBuffer(config.getString("fileSystemLocationBuffer"));
 		delayTimer.setTimerLocationBuffer(config.getString("timerLocationBuffer"));
 
@@ -287,7 +294,7 @@ public class FlowTimer {
 		settingsWindow.getVisualCue().setSelected(config.getBoolean("visualCue"));
 		settingsWindow.setBeepSound(config.getString("beepSound"));
 		settingsWindow.getKeyTrigger().setSelectedItem(config.getString("key"));
-		
+
 		settingsWindow.setBeepImportLocationBuffer(config.getString("beepImportLocationBuffer"));
 
 		setPin(config.getBoolean("pin"));
