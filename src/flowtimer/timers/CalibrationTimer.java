@@ -55,7 +55,7 @@ public class CalibrationTimer extends BaseTimer {
 
 		framesHit = new HashMap<>();
 
-		fpsComponent = new CalibrationComponent<JComboBox<Double>>(0, "FPS", new JComboBox<Double>(new Double[] { 60.0, 59.7275, 59.8261 }), 80, 20);
+		fpsComponent = new CalibrationComponent<JComboBox<Double>>(0, "FPS", new JComboBox<Double>(new Double[] { 59.7275, 59.8261, 60.0, 30.0, 15.0 }), 80, 20);
 		initialOffsetComponent = new CalibrationComponent<IntTextField>(1, "Inital Offset", new IntTextField(false), 80, 20);
 		targetFrameComponent = new CalibrationComponent<IntTextField>(2, "Target Frame", new IntTextField(false), 80, 20);
 		intervalComponent = new CalibrationComponent<IntTextField>(3, "Interval", new IntTextField(false), 80, 20);

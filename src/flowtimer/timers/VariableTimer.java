@@ -32,7 +32,7 @@ public class VariableTimer extends BaseTimer {
 		super(flowtimer);
 
 		frameComponent = new VariableComponent<IntTextField>(0, "Frame", new IntTextField(false), 80, 20);
-		fpsComponent = new VariableComponent<JComboBox<Float>>(1, "FPS", new JComboBox<Float>(new Float[] { 60.0f, 59.7275f, 59.8261f }), 80, 20);
+		fpsComponent = new VariableComponent<JComboBox<Float>>(1, "FPS", new JComboBox<Float>(new Float[] { 59.7275f, 59.8261f, 60.0f, 30.0f, 15.0f }), 80, 20);
 		offsetComponent = new VariableComponent<IntTextField>(2, "Offset", new IntTextField(true), 80, 20);
 		intervalComponent = new VariableComponent<IntTextField>(3, "Interval", new IntTextField(false), 80, 20);
 		numBeepsComponent = new VariableComponent<IntTextField>(4, "Beeps", new IntTextField(false), 80, 20);

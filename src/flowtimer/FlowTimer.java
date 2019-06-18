@@ -98,7 +98,7 @@ public class FlowTimer {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				if(delayTimer.haveTimersChanged()) {
-					if(JOptionPane.showConfirmDialog(null, "You’ve changed your timers without saving. Would you like to save your timers?", "Save timers?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					if(JOptionPane.showConfirmDialog(frame, "You’ve changed your timers without saving. Would you like to save your timers?", "Save timers?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 						delayTimer.onSaveTimersPress();
 					}
 				}
@@ -259,12 +259,12 @@ public class FlowTimer {
 
 		defaultMap.put("key", "On Press");
 
-		defaultMap.put("variableFps", "60.0");
+		defaultMap.put("variableFps", "59.7275");
 		defaultMap.put("variableOffset", "0");
 		defaultMap.put("variableInterval", "500");
 		defaultMap.put("variableNumBeeps", "5");
 		
-		defaultMap.put("calibrationFps", "60.0");
+		defaultMap.put("calibrationFps", "59.7275");
 		defaultMap.put("calibrationInterval", "500");
 		defaultMap.put("calibrationNumBeeps", "5");
 

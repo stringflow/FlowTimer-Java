@@ -59,7 +59,7 @@ public class DelayTimer extends BaseTimer {
 	private ColumnLabel intervalLabel;
 	private ColumnLabel numBeepsLabel;
 
-	private LinkedList<TimerEntry> lastLoadedTimers;
+	private String savedTimers;
 
 	public DelayTimer(FlowTimer flowtimer) {
 		super(flowtimer);
@@ -239,7 +239,8 @@ public class DelayTimer extends BaseTimer {
 		JSON json = new JSON(array);
 		json.write(filePath);
 		timerLocationBuffer = filePath;
-		JOptionPane.showMessageDialog(null, "Timers successfully saved to " + filePath, "Success", JOptionPane.INFORMATION_MESSAGE);
+		savedTimers = timers.toString();
+		JOptionPane.showMessageDialog(flowtimer.getFrame(), "Timers successfully saved to " + filePath, "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public void onLoadTimersPress() {
@@ -253,45 +254,33 @@ public class DelayTimer extends BaseTimer {
 			loadTimers(filePath, true);
 		}
 	}
-
+	
 	private void loadTimers(String filePath, boolean showSuccessMessage) {
-		lastLoadedTimers = new LinkedList<>();
+		LinkedList<TimerEntry> loadedList = new LinkedList<>();
 		try {
 			List<JSONValue> jsonTimers = new JSON(new File(filePath)).get().asArray();
 			int index = 0;
 			for(JSONValue jsonTimer : jsonTimers) {
 				Map<String, JSONValue> timer = jsonTimer.asObject();
-				lastLoadedTimers.add(new TimerEntry(index++, timer.get("name").asString(), timer.get("offsets").asString(), timer.get("interval").asLong(), timer.get("numBeeps").asInt(), timer.get("removeButton").asBoolean()));
+				loadedList.add(new TimerEntry(index++, timer.get("name").asString(), timer.get("offsets").asString(), timer.get("interval").asLong(), timer.get("numBeeps").asInt(), timer.get("removeButton").asBoolean()));
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Timers failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(flowtimer.getFrame(), "Timers failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		savedTimers = loadedList.toString();
 		LinkedList<TimerEntry> currentTimers = new LinkedList<>(timers);
 		currentTimers.forEach(timer -> removeTimer(timer));
-		for(int i = 0; i < lastLoadedTimers.size(); i++) {
-			addNewTimer(new TimerEntry(i, lastLoadedTimers.get(i)));
-		}
+		loadedList.forEach(timer -> addNewTimer(timer));
 		timers.getFirst().select();
 		timerLocationBuffer = filePath;
 		if(showSuccessMessage) {
-			JOptionPane.showMessageDialog(null, "Timers successfully loaded.", "Success", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(flowtimer.getFrame(), "Timers successfully loaded.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
 	public boolean haveTimersChanged() {
-		if(lastLoadedTimers == null) {
-			return true;
-		}
-		if(lastLoadedTimers.size() != timers.size()) {
-			return true;
-		}
-		for(int i = 0; i < lastLoadedTimers.size(); i++) {
-			if(!lastLoadedTimers.get(i).equals(timers.get(i))) {
-				return true;
-			}
-		}
-		return false;
+		return savedTimers == null ? false : !savedTimers.equalsIgnoreCase(timers.toString());
 	}
 
 	public String getTimerLocationBuffer() {
@@ -385,10 +374,6 @@ public class DelayTimer extends BaseTimer {
 			offsetField.getDocument().addDocumentListener(new TimerEntryDocumentListener(this));
 			intervalField.getDocument().addDocumentListener(new TimerEntryDocumentListener(this));
 			numBeepsField.getDocument().addDocumentListener(new TimerEntryDocumentListener(this));
-		}
-
-		public TimerEntry(int index, TimerEntry other) {
-			this(index, other.getName(), other.getOffsetsString(), other.getInterval(), other.getNumBeeps(), other.hasRemoveButton());
 		}
 
 		public void recalcPosition(int index) {
@@ -486,9 +471,8 @@ public class DelayTimer extends BaseTimer {
 			return true;
 		}
 
-		public boolean equals(Object obj) {
-			TimerEntry other = (TimerEntry) obj;
-			return other.getName().equalsIgnoreCase(getName()) && other.getOffsetsString().equalsIgnoreCase(getOffsetsString()) && other.getNumBeeps() == getNumBeeps() && other.getInterval() == getInterval();
+		public String toString() {
+			return "TimerEntry [getName()=" + getName() + ", getOffsetsString()=" + getOffsetsString() + ", getInterval()=" + getInterval() + ", getNumBeeps()=" + getNumBeeps() + ", hasRemoveButton()=" + hasRemoveButton() + "]";
 		}
 	}
 

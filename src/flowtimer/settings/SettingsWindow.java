@@ -34,7 +34,7 @@ public class SettingsWindow extends JDialog {
 
 	public static final int WIDTH = 290;
 	public static final int HEIGHT = 280;
-	public static final String TITLE = "FlowTimer 1.6 - Settings";
+	public static final String TITLE = FlowTimer.TITLE + " - Settings";
 
 	private FlowTimer flowtimer;
 
@@ -148,6 +148,7 @@ public class SettingsWindow extends JDialog {
 					JOptionPane.showMessageDialog(this, "Beep sound successfully imported.", "Success", JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(this, "Beep sound failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
 				}
 			}
 		});
