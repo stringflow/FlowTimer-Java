@@ -20,6 +20,9 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 
@@ -345,7 +348,9 @@ public class DelayTimer extends BaseTimer {
 		public TimerEntry(int index, String name, String offsets, long interval, int numBeeps, boolean addRemoveButton) {
 			radioButton = new JRadioButton();
 			nameField = new JTextField(String.valueOf(name));
-			offsetField = new JTextField(offsets);
+			offsetField = new JTextField();
+			offsetField.setDocument(new OffsetFieldDocument(offsetField));
+			offsetField.setText(offsets);
 			intervalField = new IntTextField(false);
 			intervalField.setValue(interval);
 			numBeepsField = new IntTextField(false);
@@ -475,8 +480,26 @@ public class DelayTimer extends BaseTimer {
 			return "TimerEntry [getName()=" + getName() + ", getOffsetsString()=" + getOffsetsString() + ", getInterval()=" + getInterval() + ", getNumBeeps()=" + getNumBeeps() + ", hasRemoveButton()=" + hasRemoveButton() + "]";
 		}
 	}
+	
+	private class OffsetFieldDocument extends PlainDocument {
 
-	public class TimerEntryDocumentListener implements DocumentListener {
+		private static final long serialVersionUID = 5344594296265409409L;
+		
+		private JTextField textField;
+		
+		public OffsetFieldDocument(JTextField textField) {
+			this.textField = textField;
+		}
+
+		public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+			if(!new StringBuffer(textField.getText()).insert(offs, str).toString().matches("^(\\d|\\/)*$")) {
+				return;
+			}
+			super.insertString(offs, str, a);
+		}
+	}
+
+	private class TimerEntryDocumentListener implements DocumentListener {
 
 		private TimerEntry parent;
 

@@ -43,7 +43,7 @@ public class FlowTimer {
 
 	public static final int WIDTH = 451;
 	public static final int HEIGHT = 287;
-	public static final String TITLE = "FlowTimer 1.7";
+	public static final String TITLE = "FlowTimer 1.7.1";
 	public static final File MAIN_FOLDER = new File(System.getenv("appdata") + "\\flowtimer");
 	public static final File SETTINGS_FILE = new File(MAIN_FOLDER.getPath() + "\\flowtimer.config");
 	public static final File IMPORTED_BEEPS_FOLDER = new File(MAIN_FOLDER.getPath() + "\\beeps");
