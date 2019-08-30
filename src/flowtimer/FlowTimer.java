@@ -18,6 +18,7 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.management.RuntimeErrorException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -77,13 +78,13 @@ public class FlowTimer {
 
 	public FlowTimer() throws Exception {
 		initSwing();
-		
-		OpenAL.init();
+
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 		logger.setLevel(Level.OFF);
 		logger.setUseParentHandlers(false);
 		GlobalScreen.registerNativeHook();
 		GlobalScreen.addNativeKeyListener(new GlobalScreenListener());
+		OpenAL.init();
 
 		frame = new JFrame();
 		frame.setSize(WIDTH, HEIGHT);

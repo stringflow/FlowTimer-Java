@@ -18,11 +18,11 @@ public class OpenAL {
 
 	private static final float PITCH = 1.0f;
 	private static final float GAIN = 1.0f;
-	private static final FloatBuffer SOURCE_POSITION = BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
-	private static final FloatBuffer SOURCE_VELOCITY = BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
-	private static final FloatBuffer LISTENER_POSITION = BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
-	private static final FloatBuffer LISTENER_VELOCITY = BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
-	private static final FloatBuffer LISTENER_ORIENTATION = BufferUtils.createFloatBuffer(6).put(new float[] { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f }).rewind();
+	private static final FloatBuffer SOURCE_POSITION = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
+	private static final FloatBuffer SOURCE_VELOCITY = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
+	private static final FloatBuffer LISTENER_POSITION = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
+	private static final FloatBuffer LISTENER_VELOCITY = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }).rewind();
+	private static final FloatBuffer LISTENER_ORIENTATION = (FloatBuffer) BufferUtils.createFloatBuffer(6).put(new float[] { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f }).rewind();
 
 	private static HashMap<String, Integer> loadedSounds;
 	private static ArrayList<Integer> bufferList;
