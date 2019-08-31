@@ -467,9 +467,11 @@ public class DelayTimer extends BaseTimer {
 			if(!numBeepsField.getText().matches("^0*[1-9]\\d*$")) {
 				return false;
 			}
+			long minDelay = Integer.valueOf(intervalField.getText()).intValue() * Integer.valueOf(numBeepsField.getText()).intValue();
 			String offsets[] = offsetField.getText().split("/");
 			for(int offsetIndex = 0; offsetIndex < offsets.length; offsetIndex++) {
-				if(Long.valueOf(offsets[offsetIndex]) <= 0) {
+				long offset = Long.valueOf(offsets[offsetIndex]);
+				if(offset < minDelay) {
 					return false;
 				}
 			}
