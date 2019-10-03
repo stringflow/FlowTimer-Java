@@ -111,7 +111,7 @@ public class DelayTimer extends BaseTimer {
 	public void loadTimers() {
 		if(!new File(timerLocationBuffer).exists()) {
 			if(!timerLocationBuffer.equals("null")) {
-				JOptionPane.showMessageDialog(flowtimer.getFrame(), "Unable to load the last timer file.");
+				JOptionPane.showMessageDialog(flowtimer.getFrame(), "Unable to locate the last used timer file. (It either got deleted or moved to a new directory)");
 				timerLocationBuffer = "null";
 			}
 			addDefaultTimer(false);
@@ -283,7 +283,7 @@ public class DelayTimer extends BaseTimer {
 	}
 
 	public boolean haveTimersChanged() {
-		return savedTimers == null ? false : !savedTimers.equalsIgnoreCase(timers.toString());
+		return savedTimers == null ? true : !savedTimers.equalsIgnoreCase(timers.toString());
 	}
 
 	public String getTimerLocationBuffer() {
