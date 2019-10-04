@@ -1,5 +1,8 @@
 package flowtimer.timers;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -14,7 +17,6 @@ import javax.swing.event.DocumentListener;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import flowtimer.FlowTimer;
-import flowtimer.ITimerLabelUpdateCallback;
 import flowtimer.IntTextField;
 
 public class VariableTimer extends BaseTimer {
@@ -27,6 +29,7 @@ public class VariableTimer extends BaseTimer {
 	private VariableComponent<IntTextField> intervalComponent;
 	private VariableComponent<IntTextField> numBeepsComponent;
 	private JButton submitButton;
+	private JLabel errorLabel;
 
 	public VariableTimer(FlowTimer flowtimer) {
 		super(flowtimer);
@@ -50,11 +53,29 @@ public class VariableTimer extends BaseTimer {
 			long offsets[] = { getVariableOffset() - passedTime };
 			int interval = intervalComponent.getComponent().getValue();
 			int numBeeps = numBeepsComponent.getComponent().getValue();
+			if(offsets[0] < interval * numBeeps) {
+				Toolkit.getDefaultToolkit().beep();
+				errorLabel.setText("Too much time has passed for that frame");
+				new Thread(() -> {
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					errorLabel.setText("");
+				}).start();	
+				return;
+			}
 			long universalOffset = offsetComponent.getComponent().getValue();
 			flowtimer.scheduleActions(offsets, interval, numBeeps, universalOffset);
 			setVariableInterface(false);
 			submitButton.setEnabled(false);
 		});
+		
+		errorLabel = new JLabel();
+		errorLabel.setFont(new Font("Default", 0, 12));
+		errorLabel.setBounds(frameComponent.getLabel().getX(), frameComponent.getLabel().getY() - 15, 230, 22);
+		errorLabel.setForeground(Color.RED);
 		
 		// Click submit button when enter is hit while editing the frame text field
 		frameComponent.getComponent().addKeyListener(new KeyListener() {
@@ -76,6 +97,7 @@ public class VariableTimer extends BaseTimer {
 		intervalComponent.add(this);
 		numBeepsComponent.add(this);
 		add(submitButton);
+		add(errorLabel);
 	}
 	
 	private boolean isVariableDataValid() {
@@ -92,7 +114,7 @@ public class VariableTimer extends BaseTimer {
 			return false;
 		}
 		if(flowtimer.isTimerRunning()) {
-			if(getVariableOffset() - (intervalComponent.getComponent().getValue() * numBeepsComponent.getComponent().getValue()) < flowtimer.getTimerLabelUpdateThread().getTimerLabelCallback().getTime(flowtimer.getTimerStartTime())) {
+			if(getVariableOffset() - (intervalComponent.getComponent().getValue() * numBeepsComponent.getComponent().getValue()) < flowtimer.getTimerStartTime() - System.nanoTime()) {
 				return false;
 			}
 		}
@@ -109,15 +131,14 @@ public class VariableTimer extends BaseTimer {
 	}
 
 	public void onTimerStart(long startTime) {
+		submitButton.setEnabled(true);
 	}
 
 	public void onTimerStop() {
 		flowtimer.setTimerLabel(0);
+		submitButton.setEnabled(false);
+		errorLabel.setText("");
 		setVariableInterface(true);
-	}
-
-	public void onTimerLabelUpdate(long time) {
-		submitButton.setEnabled(flowtimer.isTimerRunning() && !flowtimer.areActionsScheduled() && isVariableDataValid());
 	}
 
 	public void onKeyEvent(NativeKeyEvent e) {
@@ -134,10 +155,6 @@ public class VariableTimer extends BaseTimer {
 		frameComponent.setEnabled(enabled);
 	}
 	
-	public ITimerLabelUpdateCallback getTimerLabelUpdateCallback() {
-		return (startTime) -> (System.nanoTime() - startTime) / 1_000_000;
-	}
-
 	public boolean canStartTimer() {
 		return true;
 	}
@@ -167,13 +184,13 @@ public class VariableTimer extends BaseTimer {
 		public static final int X_BASE = 150;
 		public static final int X_OFFSET = 50;
 		public static final int Y_BASE = 20;
-		public static final int Y_PADDING = 25;
+		public static final int Y_MARGIN = 25;
 
 		private JLabel label;
 		private E component;
 		
 		public VariableComponent(int index, String name, E component, int width, int height) {
-			int y = Y_BASE + index * Y_PADDING;
+			int y = Y_BASE + index * Y_MARGIN;
 			label = new JLabel(name + ":");
 			label.setBounds(X_BASE, y, X_OFFSET - 5, 35);
 			this.component = component;

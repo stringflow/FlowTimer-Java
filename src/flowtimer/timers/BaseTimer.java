@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import flowtimer.FlowTimer;
-import flowtimer.ITimerLabelUpdateCallback;
 
 public abstract class BaseTimer extends JPanel {
 	
@@ -25,7 +24,7 @@ public abstract class BaseTimer extends JPanel {
 			}
 		});
 	}
-
+	
 	// Gets called when the tab of the timer is loaded
 	public abstract void onLoad();
 	
@@ -35,14 +34,8 @@ public abstract class BaseTimer extends JPanel {
 	// Gets called when the timer stops while on this tab
 	public abstract void onTimerStop();
 	
-	// Gets called every time the timer label gets updated
-	public abstract void onTimerLabelUpdate(long time);
-	
 	// Gets called on key strokes while on this tab
 	public abstract void onKeyEvent(NativeKeyEvent e);
-	
-	// Returns a lambda telling the timer label how it should update over time
-	public abstract ITimerLabelUpdateCallback getTimerLabelUpdateCallback();
 	
 	// Returns whether or not the timer can be started
 	public abstract boolean canStartTimer();

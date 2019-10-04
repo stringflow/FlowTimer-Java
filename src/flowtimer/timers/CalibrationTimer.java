@@ -20,7 +20,6 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 
 import flowtimer.FlowTimer;
 import flowtimer.Gaussian;
-import flowtimer.ITimerLabelUpdateCallback;
 import flowtimer.IntTextField;
 
 public class CalibrationTimer extends BaseTimer {
@@ -31,7 +30,7 @@ public class CalibrationTimer extends BaseTimer {
 	private CalibrationComponent<IntTextField> targetFrameComponent;
 	private CalibrationComponent<IntTextField> initialOffsetComponent;
 	private CalibrationComponent<IntTextField> intervalComponent;
-	private CalibrationComponent<IntTextField> beepsComponent;
+	private CalibrationComponent<IntTextField> numBeepsComponent;
 	private JButton startButton;
 	private JButton restartButton;
 	private CalibrationComponent<IntTextField> currentOffsetComponent;
@@ -59,7 +58,7 @@ public class CalibrationTimer extends BaseTimer {
 		initialOffsetComponent = new CalibrationComponent<IntTextField>(1, "Inital Offset", new IntTextField(false), 80, 20);
 		targetFrameComponent = new CalibrationComponent<IntTextField>(2, "Target Frame", new IntTextField(false), 80, 20);
 		intervalComponent = new CalibrationComponent<IntTextField>(3, "Interval", new IntTextField(false), 80, 20);
-		beepsComponent = new CalibrationComponent<IntTextField>(4, "Beeps", new IntTextField(false), 80, 20);
+		numBeepsComponent = new CalibrationComponent<IntTextField>(4, "Beeps", new IntTextField(false), 80, 20);
 		currentOffsetComponent = new CalibrationComponent<IntTextField>(6, "Current Offset", new IntTextField(false), 80, 20);
 		actualFrameComponent = new CalibrationComponent<IntTextField>(7, "Actual Frame", new IntTextField(true), 80, 20);
 		percentageLabel = new JLabel();
@@ -146,7 +145,7 @@ public class CalibrationTimer extends BaseTimer {
 		targetFrameComponent.add(this);
 		initialOffsetComponent.add(this);
 		intervalComponent.add(this);
-		beepsComponent.add(this);
+		numBeepsComponent.add(this);
 		add(startButton);
 		add(restartButton);
 	}
@@ -156,21 +155,14 @@ public class CalibrationTimer extends BaseTimer {
 	}
 
 	public void onTimerStart(long startTime) {
-		flowtimer.scheduleActions(new long[] { currentOffsetComponent.getComponent().getValue() }, intervalComponent.getComponent().getValue(), beepsComponent.getComponent().getValue(), 0);
+		flowtimer.scheduleActions(new long[] { currentOffsetComponent.getComponent().getValue() }, intervalComponent.getComponent().getValue(), numBeepsComponent.getComponent().getValue(), 0);
 	}
 
 	public void onTimerStop() {
 		flowtimer.setTimerLabel(currentOffsetComponent.getComponent().getValue());
 	}
 
-	public void onTimerLabelUpdate(long time) {
-	}
-
 	public void onKeyEvent(NativeKeyEvent e) {
-	}
-
-	public ITimerLabelUpdateCallback getTimerLabelUpdateCallback() {
-		return (startTime) -> currentOffsetComponent.getComponent().getValue() - (System.nanoTime() - startTime) / 1_000_000;
 	}
 
 	public boolean canStartTimer() {
@@ -181,8 +173,8 @@ public class CalibrationTimer extends BaseTimer {
 		return intervalComponent;
 	}
 
-	public CalibrationComponent<IntTextField> getBeepsComponent() {
-		return beepsComponent;
+	public CalibrationComponent<IntTextField> getNumBeepsComponent() {
+		return numBeepsComponent;
 	}
 
 	public CalibrationComponent<JComboBox<Double>> getFpsComponent() {
@@ -255,13 +247,13 @@ public class CalibrationTimer extends BaseTimer {
 		public static final int X_BASE = 150;
 		public static final int X_OFFSET = 80;
 		public static final int Y_BASE = 20;
-		public static final int Y_PADDING = 25;
+		public static final int Y_MARGIN = 25;
 
 		private JLabel label;
 		private E component;
 
 		public CalibrationComponent(int index, String name, E component, int width, int height) {
-			int y = Y_BASE + index * Y_PADDING;
+			int y = Y_BASE + index * Y_MARGIN;
 			label = new JLabel(name + ":");
 			label.setBounds(X_BASE, y, X_OFFSET - 5, 35);
 			this.component = component;

@@ -7,8 +7,6 @@ import flowtimer.FlowTimer;
 
 public class VisualAction extends Action {
 	
-	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
-
 	private Color color;
 	
 	public VisualAction(FlowTimer flowtimer, Color color) {
@@ -17,13 +15,15 @@ public class VisualAction extends Action {
 	}
 
 	public void run() {
-		flowtimer.getVisualPanel().setBackColor(color);
+		flowtimer.setVisualCueColor(color);
+		flowtimer.getTimerLabel().repaint();
 		try {
 			Thread.sleep(flowtimer.getSettings().getVisualCueLength().getValue());
 		} catch (InterruptedException e) {
 			ErrorHandler.handleException(e, false);
 		}
-		flowtimer.getVisualPanel().setBackColor(TRANSPARENT);
+		flowtimer.setVisualCueColor(FlowTimer.TRANSPARENT);
+		flowtimer.getTimerLabel().repaint();
 	}
 
 	public Color getColor() {

@@ -53,6 +53,7 @@ public class KeyInput {
 		
 		parent.add(label);
 		parent.add(clearButton);
+		parent.getInputs().add(this);
 	}
 	
 	public NamedInput getPrimaryInput() {
@@ -81,6 +82,10 @@ public class KeyInput {
 	public KeyInput setGlobalCheckbox(JCheckBox global) {
 		this.globalCheckbox = global;
 		return this;
+	}
+	
+	public String getActionName() {
+		return label.getText();
 	}
 
 	private static class ButtonActionListener implements ActionListener {

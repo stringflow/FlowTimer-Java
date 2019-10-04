@@ -27,7 +27,6 @@ import javax.swing.text.PlainDocument;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import flowtimer.FlowTimer;
-import flowtimer.ITimerLabelUpdateCallback;
 import flowtimer.IntTextField;
 import flowtimer.MenuButton;
 import flowtimer.parsing.json.JSON;
@@ -43,7 +42,7 @@ public class DelayTimer extends BaseTimer {
 	private static final int ADD_BUTTON_BASE_Y = 35;
 	private static final int ADD_BUTTON_WIDTH = 55;
 	private static final int ADD_BUTTON_HEIGHT = 22;
-	private static final int ADD_BUTTON_PADDING = 3;
+	private static final int ADD_BUTTON_MARGIN = 3;
 
 	private String fileSystemLocationBuffer;
 	private String timerLocationBuffer;
@@ -158,7 +157,7 @@ public class DelayTimer extends BaseTimer {
 
 	private void recalcAddButton() {
 		int addButtonX = ADD_BUTTON_BASE_X;
-		int addButtonY = ADD_BUTTON_BASE_Y + (addButton.getHeight() + ADD_BUTTON_PADDING) * timers.size();
+		int addButtonY = ADD_BUTTON_BASE_Y + (addButton.getHeight() + ADD_BUTTON_MARGIN) * timers.size();
 		addButton.setBounds(addButtonX, addButtonY, addButton.getWidth(), addButton.getHeight());
 		resizeWindow();
 	}
@@ -178,9 +177,6 @@ public class DelayTimer extends BaseTimer {
 		setInterface(true);
 	}
 
-	public void onTimerLabelUpdate(long time) {
-	}
-
 	public void onKeyEvent(NativeKeyEvent e) {
 		if(flowtimer.getSettings().getUpInput().isPressed(e.getKeyCode())) {
 			changeTimer(-1);
@@ -188,10 +184,6 @@ public class DelayTimer extends BaseTimer {
 		if(flowtimer.getSettings().getDownInput().isPressed(e.getKeyCode())) {
 			changeTimer(+1);
 		}
-	}
-
-	public ITimerLabelUpdateCallback getTimerLabelUpdateCallback() {
-		return (startTime) -> runningTimer.getMaxOffset() - (System.nanoTime() - startTime) / 1_000_000;
 	}
 
 	public boolean canStartTimer() {
@@ -283,7 +275,7 @@ public class DelayTimer extends BaseTimer {
 	}
 
 	public boolean haveTimersChanged() {
-		return savedTimers == null ? true : !savedTimers.equalsIgnoreCase(timers.toString());
+		return savedTimers == null ? false : !savedTimers.equalsIgnoreCase(timers.toString());
 	}
 
 	public String getTimerLocationBuffer() {
@@ -309,12 +301,12 @@ public class DelayTimer extends BaseTimer {
 		public static final int WIDTH = 55;
 		public static final int HEIGHT = 20;
 		public static final int X_BASE = 146;
-		public static final int X_PADDING = 5;
+		public static final int X_MARGIN = 5;
 		public static final int Y_BASE = 16;
 
 		public ColumnLabel(String text, int index) {
 			super(text);
-			setBounds(X_BASE + index * (X_PADDING + WIDTH), Y_BASE, WIDTH, HEIGHT);
+			setBounds(X_BASE + index * (X_MARGIN + WIDTH), Y_BASE, WIDTH, HEIGHT);
 		}
 	}
 
@@ -324,8 +316,8 @@ public class DelayTimer extends BaseTimer {
 		public static final int BASE_Y = 36;
 		public static final int LABEL_WIDTH = 55;
 		public static final int LABEL_HEIGHT = 20;
-		public static final int PADDING_X = 5;
-		public static final int PADDING_Y = 5;
+		public static final int MARGIN_X = 5;
+		public static final int MARGIN_Y = 5;
 
 		public static final int RADIO_BUTTON_BASE_X = 126;
 		public static final int RADIO_BUTTON_BASE_Y = 35;
@@ -388,7 +380,7 @@ public class DelayTimer extends BaseTimer {
 			setFieldPosition(intervalField, xIndex++, index);
 			setFieldPosition(numBeepsField, xIndex++, index);
 
-			int radioButtonY = RADIO_BUTTON_BASE_Y + (RADIO_BUTTON_HEIGHT + PADDING_Y) * index;
+			int radioButtonY = RADIO_BUTTON_BASE_Y + (RADIO_BUTTON_HEIGHT + MARGIN_Y) * index;
 			radioButton.setBounds(RADIO_BUTTON_BASE_X, radioButtonY, RADIO_BUTTON_WIDTH, RADIO_BUTTON_HEIGHT);
 			if(removeButton != null) {
 				removeButton.setBounds(numBeepsField.getX() + REMOVE_BUTTON_X_OFFSET, nameField.getY(), REMOVE_BUTTON_WIDTH, LABEL_HEIGHT);
@@ -396,8 +388,8 @@ public class DelayTimer extends BaseTimer {
 		}
 
 		private void setFieldPosition(JTextField field, int xIndex, int yIndex) {
-			int xPos = BASE_X + (LABEL_WIDTH + PADDING_X) * xIndex;
-			int yPos = BASE_Y + (LABEL_HEIGHT + PADDING_Y) * yIndex;
+			int xPos = BASE_X + (LABEL_WIDTH + MARGIN_X) * xIndex;
+			int yPos = BASE_Y + (LABEL_HEIGHT + MARGIN_Y) * yIndex;
 			field.setBounds(xPos, yPos, LABEL_WIDTH, LABEL_HEIGHT);
 		}
 

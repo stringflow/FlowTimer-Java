@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="res"/>
 	<classpathentry kind="lib" path="lib/jnativehook-2.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/JTattoo-1.6.11.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl_util.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl.jar">
 		<attributes>

@@ -2,6 +2,7 @@ package flowtimer;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -13,6 +14,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -31,8 +33,15 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import flowtimer.actions.Action;
 import flowtimer.actions.SoundAction;
 import flowtimer.actions.VisualAction;
-import flowtimer.parsing.Config;
+import flowtimer.parsing.config.Config;
+import flowtimer.parsing.config.ConfigComment;
+import flowtimer.parsing.config.ConfigEntryBoolean;
+import flowtimer.parsing.config.ConfigEntryFloat;
+import flowtimer.parsing.config.ConfigEntryInt;
+import flowtimer.parsing.config.ConfigEntryString;
+import flowtimer.parsing.config.ConfigNewLine;
 import flowtimer.settings.KeyInput;
+import flowtimer.settings.NamedInput;
 import flowtimer.settings.SettingsWindow;
 import flowtimer.timers.BaseTimer;
 import flowtimer.timers.CalibrationTimer;
@@ -43,11 +52,12 @@ public class FlowTimer {
 
 	public static final int WIDTH = 451;
 	public static final int HEIGHT = 287;
-	public static final String TITLE = "FlowTimer 1.7.1";
+	public static final String TITLE = "FlowTimer 1.8";
 	public static final File MAIN_FOLDER = new File(System.getenv("appdata") + "\\flowtimer");
 	public static final File SETTINGS_FILE = new File(MAIN_FOLDER.getPath() + "\\flowtimer.config");
 	public static final File IMPORTED_BEEPS_FOLDER = new File(MAIN_FOLDER.getPath() + "\\beeps");
-
+	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+	
 	private JFrame frame;
 	private JTabbedPane tabbedPane;
 	private SettingsWindow settingsWindow;
@@ -57,9 +67,10 @@ public class FlowTimer {
 	private CalibrationTimer calibrationTimer;
 	
 	private Config config;
+	
+	private Color visualCueColor;
 
 	private JLabel timerLabel;
-	private VisualPanel visualPanel;
 	private MenuButton startButton;
 	private MenuButton resetButton;
 	private MenuButton settingsButton;
@@ -69,7 +80,6 @@ public class FlowTimer {
 	private boolean isTimerRunning;
 	private boolean areActionsScheduled;
 	private long timerStartTime;
-	private TimerLabelUpdateThread timerLabelUpdateThread;
 
 	private SoundAction soundAction;
 	private VisualAction visualAction;
@@ -98,80 +108,33 @@ public class FlowTimer {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				if(delayTimer.haveTimersChanged()) {
-					if(JOptionPane.showConfirmDialog(frame, "You’ve changed your timers without saving. Would you like to save your timers?", "Save timers?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					if(JOptionPane.showConfirmDialog(frame, "You've changed your timers without saving. Would you like to save your timers?", "Save timers?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 						delayTimer.onSaveTimersPress();
 					}
 				}
 
 				OpenAL.dispose();
-
-				HashMap<String, String> map = new HashMap<>();
-				map.put("fileSystemLocationBuffer", delayTimer.getFileSystemLocationBuffer());
-				map.put("timerLocationBuffer", delayTimer.getTimerLocationBuffer());
-				map.put("beepImportLocationBuffer", settingsWindow.getBeepImportLocationBuffer());
-
-				map.put("primaryStartKey", settingsWindow.getStartInput().getPrimaryInput().getKeyCode() + "");
-				map.put("primaryResetKey", settingsWindow.getStopInput().getPrimaryInput().getKeyCode() + "");
-				map.put("primaryUpKey", settingsWindow.getUpInput().getPrimaryInput().getKeyCode() + "");
-				map.put("primaryDownKey", settingsWindow.getDownInput().getPrimaryInput().getKeyCode() + "");
-				map.put("primaryStartKeyName", settingsWindow.getStartInput().getPrimaryInput().getName());
-				map.put("primaryResetKeyName", settingsWindow.getStopInput().getPrimaryInput().getName());
-				map.put("primaryUpKeyName", settingsWindow.getUpInput().getPrimaryInput().getName());
-				map.put("primaryDownKeyName", settingsWindow.getDownInput().getPrimaryInput().getName());
-
-				map.put("secondaryStartKey", settingsWindow.getStartInput().getSecondaryInput().getKeyCode() + "");
-				map.put("secondaryResetKey", settingsWindow.getStopInput().getSecondaryInput().getKeyCode() + "");
-				map.put("secondaryUpKey", settingsWindow.getUpInput().getSecondaryInput().getKeyCode() + "");
-				map.put("secondaryDownKey", settingsWindow.getDownInput().getSecondaryInput().getKeyCode() + "");
-				map.put("secondaryStartKeyName", settingsWindow.getStartInput().getSecondaryInput().getName());
-				map.put("secondaryResetKeyName", settingsWindow.getStopInput().getSecondaryInput().getName());
-				map.put("secondaryUpKeyName", settingsWindow.getUpInput().getSecondaryInput().getName());
-				map.put("secondaryDownKeyName", settingsWindow.getDownInput().getSecondaryInput().getName());
-
-				map.put("globalStartReset", settingsWindow.getGlobalStartStop().isSelected() + "");
-				map.put("globalUpDown", settingsWindow.getGlobalUpDown().isSelected() + "");
-				map.put("visualCue", settingsWindow.getVisualCue().isSelected() + "");
-				map.put("beepSound", settingsWindow.getBeepSound().getSelectedItem() + "");
-
-				map.put("visualCueColor", String.format("#%02X%02X%02X", visualAction.getColor().getRed(), visualAction.getColor().getGreen(), visualAction.getColor().getBlue()));
-				map.put("visualCueLength", settingsWindow.getVisualCueLength().getValue() + "");
-				map.put("pin", frame.isAlwaysOnTop() + "");
-				map.put("key", settingsWindow.getKeyTrigger().getSelectedItem() + "");
-				map.put("darkmode", settingsWindow.getDarkMode().isSelected() + "");
-				
-				map.put("variableFps", variableTimer.getFpsComponent().getComponent().getSelectedItem() + "");
-				if(variableTimer.getOffsetComponent().getComponent().isValidInt()) {
-					map.put("variableOffset", variableTimer.getOffsetComponent().getComponent().getValue() + "");
-				}
-				if(variableTimer.getIntervalComponent().getComponent().isValidInt()) {
-					map.put("variableInterval", variableTimer.getIntervalComponent().getComponent().getValue() + "");
-				}
-				if(variableTimer.getNumBeepsComponent().getComponent().isValidInt()) {
-					map.put("variableNumBeeps", variableTimer.getNumBeepsComponent().getComponent().getValue() + "");
-				}
-
-				map.put("calibrationFps", calibrationTimer.getFps() + "");
-				if(calibrationTimer.getIntervalComponent().getComponent().isValidInt()) {
-					map.put("calibrationInterval", calibrationTimer.getIntervalComponent().getComponent().getValue() + "");
-				}
-				if(calibrationTimer.getBeepsComponent().getComponent().isValidInt()) {
-					map.put("calibrationNumBeeps", calibrationTimer.getBeepsComponent().getComponent().getValue() + "");
-				}
-				
-				Config config = new Config(map);
 				try {
-					config.write(SETTINGS_FILE.getAbsolutePath());
+					config.save(SETTINGS_FILE);
 				} catch (Exception e1) {
 					ErrorHandler.handleException(e1, false);
 				}
 			}
 		});
 
-		timerLabel = new JLabel("0.00");
-		timerLabel.setBounds(11, 20, 120, 30);
+		visualCueColor = TRANSPARENT;
+		timerLabel = new JLabel("0.00") {
+			private static final long serialVersionUID = 1L;
+			
+			public void paint(Graphics g) {
+				super.paint(g);
+				g.setColor(visualCueColor);
+				g.fillRect(0, 0, getWidth(), getHeight());
+			}
+		};
+		timerLabel.setBounds(11, 20, 110, 30);
+		timerLabel.setOpaque(true);
 		timerLabel.setFont(new Font("Consolas", Font.BOLD, 29));
-
-		visualPanel = new VisualPanel(frame);
 
 		startButton = new MenuButton("Start", 0);
 		startButton.addActionListener(e -> startTimer());
@@ -206,12 +169,12 @@ public class FlowTimer {
 			tab.add(startButton);
 			tab.add(resetButton);
 			tab.add(settingsButton);
-			tab.add(visualPanel);
 			tab.add(pinLabel);
 			tab.onLoad();
 		});
 
-		loadSettings();
+		settingsWindow = new SettingsWindow(this);
+		loadConfig();
 		delayTimer.loadTimers();
 
 		tabbedPane.addTab("Fixed Offset", delayTimer);
@@ -224,50 +187,6 @@ public class FlowTimer {
 	}
 	
 	private void initSwing() throws Exception {
-		HashMap<String, String> defaultMap = new HashMap<>();
-		defaultMap.put("fileSystemLocationBuffer", System.getProperty("user.home") + "\\Desktop");
-		defaultMap.put("beepImportLocationBuffer", defaultMap.get("fileSystemLocationBuffer"));
-		defaultMap.put("timerLocationBuffer", "null");
-
-		defaultMap.put("primaryStartKey", "-1");
-		defaultMap.put("primaryStartKeyName", "Unset");
-		defaultMap.put("primaryResetKey", "-1");
-		defaultMap.put("primaryResetKeyName", "Unset");
-		defaultMap.put("primaryUpKey", "57416");
-		defaultMap.put("primaryUpKeyName", "Up");
-		defaultMap.put("primaryDownKey", "57424");
-		defaultMap.put("primaryDownKeyName", "Down");
-
-		defaultMap.put("secondaryStartKey", "-1");
-		defaultMap.put("secondaryStartKeyName", "Unset");
-		defaultMap.put("secondaryResetKey", "-1");
-		defaultMap.put("secondaryResetKeyName", "Unset");
-		defaultMap.put("secondaryUpKey", "-1");
-		defaultMap.put("secondaryUpKeyName", "Unset");
-		defaultMap.put("secondaryDownKey", "-1");
-		defaultMap.put("secondaryDownKeyName", "Unset");
-
-		defaultMap.put("globalStartReset", "true");
-		defaultMap.put("globalUpDown", "true");
-		defaultMap.put("visualCue", "false");
-		defaultMap.put("beepSound", "ping1");
-		defaultMap.put("darkMode", "false");
-
-		defaultMap.put("visualCueColor", "#000000");
-		defaultMap.put("visualCueLength", "20");
-		defaultMap.put("pin", "false");
-
-		defaultMap.put("key", "On Press");
-
-		defaultMap.put("variableFps", "59.7275");
-		defaultMap.put("variableOffset", "0");
-		defaultMap.put("variableInterval", "500");
-		defaultMap.put("variableNumBeeps", "5");
-		
-		defaultMap.put("calibrationFps", "59.7275");
-		defaultMap.put("calibrationInterval", "500");
-		defaultMap.put("calibrationNumBeeps", "5");
-
 		if(!MAIN_FOLDER.exists()) {
 			MAIN_FOLDER.mkdirs();
 		}
@@ -282,60 +201,57 @@ public class FlowTimer {
 			oldSettings.delete();
 		}
 
-		if(!SETTINGS_FILE.exists()) {
-			config = new Config(defaultMap);
-			config.write(SETTINGS_FILE.getAbsolutePath());
-		} else {
-			config = new Config(SETTINGS_FILE.getAbsolutePath());
-		}
-		config.setDefaultMap(defaultMap);
-		
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		if(config.getBoolean("darkmode")) {
-			Font font = (Font) UIManager.get("Label.font");
-			UIManager.setLookAndFeel("com.jtattoo.plaf.noire.NoireLookAndFeel");
-			UIManager.put("Label.font", font);
-		}
 	}
 
-	private void loadSettings() throws Exception {
-		settingsWindow = new SettingsWindow(this);
-
-		delayTimer.setFileSystemLocationBuffer(config.getString("fileSystemLocationBuffer"));
-		delayTimer.setTimerLocationBuffer(config.getString("timerLocationBuffer"));
-
-		visualAction.setColor(Color.decode(config.getString("visualCueColor")));
-		settingsWindow.getVisualCueLength().setValue(config.getInt("visualCueLength"));
-
-		settingsWindow.getStartInput().getPrimaryInput().set(config.getString("primaryStartKeyName"), config.getInt("primaryStartKey"));
-		settingsWindow.getStopInput().getPrimaryInput().set(config.getString("primaryResetKeyName"), config.getInt("primaryResetKey"));
-		settingsWindow.getUpInput().getPrimaryInput().set(config.getString("primaryUpKeyName"), config.getInt("primaryUpKey"));
-		settingsWindow.getDownInput().getPrimaryInput().set(config.getString("primaryDownKeyName"), config.getInt("primaryDownKey"));
-
-		settingsWindow.getStartInput().getSecondaryInput().set(config.getString("secondaryStartKeyName"), config.getInt("secondaryStartKey"));
-		settingsWindow.getStopInput().getSecondaryInput().set(config.getString("secondaryResetKeyName"), config.getInt("secondaryResetKey"));
-		settingsWindow.getUpInput().getSecondaryInput().set(config.getString("secondaryUpKeyName"), config.getInt("secondaryUpKey"));
-		settingsWindow.getDownInput().getSecondaryInput().set(config.getString("secondaryDownKeyName"), config.getInt("secondaryDownKey"));
-
-		settingsWindow.getGlobalStartStop().setSelected(config.getBoolean("globalStartReset"));
-		settingsWindow.getGlobalUpDown().setSelected(config.getBoolean("globalUpDown"));
-		settingsWindow.getVisualCue().setSelected(config.getBoolean("visualCue"));
-		settingsWindow.setBeepSound(config.getString("beepSound"));
-		settingsWindow.getKeyTrigger().setSelectedItem(config.getString("key"));
-		settingsWindow.getDarkMode().setSelected(config.getBoolean("darkmode"));
-
-		settingsWindow.setBeepImportLocationBuffer(config.getString("beepImportLocationBuffer"));
-
-		setPin(config.getBoolean("pin"));
-
-		variableTimer.getFpsComponent().getComponent().setSelectedItem(config.getFloat("variableFps"));
-		variableTimer.getOffsetComponent().getComponent().setText(config.getString("variableOffset"));
-		variableTimer.getIntervalComponent().getComponent().setText(config.getString("variableInterval"));
-		variableTimer.getNumBeepsComponent().getComponent().setText(config.getString("variableNumBeeps"));
+	private void loadConfig() throws Exception {
+		config = new Config();
+		config.put(new ConfigComment("File System"));
+		config.put(new ConfigEntryString("fileSystemLocationBuffer", System.getProperty("user.home") + "\\Desktop", value -> delayTimer.setFileSystemLocationBuffer(value), () -> delayTimer.getFileSystemLocationBuffer()));
+		config.put(new ConfigEntryString("beepImportLocationBuffer", System.getProperty("user.home") + "\\Desktop", value -> settingsWindow.setBeepImportLocationBuffer(value), () -> settingsWindow.getBeepImportLocationBuffer()));
+		config.put(new ConfigEntryString("timerLocationBuffer", "null", value -> delayTimer.setTimerLocationBuffer(value), () -> delayTimer.getTimerLocationBuffer()));
 		
-		calibrationTimer.getFpsComponent().getComponent().setSelectedItem(config.getDouble("calibrationFps"));
-		calibrationTimer.getIntervalComponent().getComponent().setText(config.getString("calibrationInterval"));
-		calibrationTimer.getBeepsComponent().getComponent().setText(config.getString("calibrationNumBeeps"));
+		config.put(new ConfigNewLine());
+		config.put(new ConfigComment("Visual Cue"));
+		config.put(new ConfigEntryBoolean("visualCueEnabled", false, value -> settingsWindow.getVisualCue().setSelected(value), () -> settingsWindow.getVisualCue().isSelected()));
+		config.put(new ConfigEntryString("visualCueColor", "#000000", value -> visualAction.setColor(Color.decode(value)), () -> String.format("#%02X%02X%02X", visualAction.getColor().getRed(), visualAction.getColor().getGreen(), visualAction.getColor().getBlue())));
+		config.put(new ConfigEntryInt("visualCueLength", 20, value -> settingsWindow.getVisualCueLength().setValue(value), () -> settingsWindow.getVisualCueLength().getValue()));
+
+		config.put(new ConfigNewLine());
+		config.put(new ConfigComment("Input"));
+		for(KeyInput keyInput : settingsWindow.getInputs()) {
+			String actionName = keyInput.getActionName().replace(":", "");
+			HashMap<String, NamedInput> inputs = new HashMap<String, NamedInput>();
+			inputs.put("primary", keyInput.getPrimaryInput());
+			inputs.put("secondary", keyInput.getSecondaryInput());
+			for(Map.Entry<String, NamedInput> input : inputs.entrySet()) {
+				config.put(new ConfigEntryString(input.getKey() + actionName + "KeyName", "Unset", value -> input.getValue().setName(value), () -> input.getValue().getName()));
+				config.put(new ConfigEntryInt(input.getKey() + actionName + "Key", -1, value -> input.getValue().setKeyCode(value), () -> input.getValue().getKeyCode()));
+			}
+		}
+
+		config.put(new ConfigNewLine());
+		config.put(new ConfigComment("Variable Timer"));
+		config.put(new ConfigEntryFloat("variableFps", 59.7275f, value -> variableTimer.getFpsComponent().getComponent().setSelectedItem(value), () -> Float.valueOf(String.valueOf(variableTimer.getFpsComponent().getComponent().getSelectedItem()))));
+		config.put(new ConfigEntryInt("variableOffset", 0, value -> variableTimer.getOffsetComponent().getComponent().setValue(value), () -> variableTimer.getOffsetComponent().getComponent().getValue(), () -> variableTimer.getOffsetComponent().getComponent().isValidInt()));
+		config.put(new ConfigEntryInt("variableInterval", 500, value -> variableTimer.getIntervalComponent().getComponent().setValue(value), () -> variableTimer.getIntervalComponent().getComponent().getValue()));
+		config.put(new ConfigEntryInt("variableNumBeeps", 5, value -> variableTimer.getNumBeepsComponent().getComponent().setValue(value), () -> variableTimer.getNumBeepsComponent().getComponent().getValue()));
+		
+		config.put(new ConfigNewLine());
+		config.put(new ConfigComment("Calibration Timer"));
+		config.put(new ConfigEntryFloat("calibrationFps", 59.7275f, value -> calibrationTimer.getFpsComponent().getComponent().setSelectedItem(value), () -> Float.valueOf(String.valueOf(calibrationTimer.getFpsComponent().getComponent().getSelectedItem()))));
+		config.put(new ConfigEntryInt("calibrationInterval", 500, value -> calibrationTimer.getIntervalComponent().getComponent().setValue(value), () -> calibrationTimer.getIntervalComponent().getComponent().getValue()));
+		config.put(new ConfigEntryInt("calibrationNumBeeps", 5, value -> calibrationTimer.getNumBeepsComponent().getComponent().setValue(value), () -> calibrationTimer.getNumBeepsComponent().getComponent().getValue()));
+		
+		config.put(new ConfigNewLine());
+		config.put(new ConfigComment("Misc. Settings"));
+		config.put(new ConfigEntryBoolean("globalStartStop", true, value -> settingsWindow.getGlobalStartStop().setSelected(value), () -> settingsWindow.getGlobalStartStop().isSelected()));
+		config.put(new ConfigEntryBoolean("globalUpDown", true, value -> settingsWindow.getGlobalUpDown().setSelected(value), () -> settingsWindow.getGlobalUpDown().isSelected()));
+		config.put(new ConfigEntryString("beepSound", "ping1", value -> settingsWindow.setBeepSound(value), () -> String.valueOf(settingsWindow.getBeepSound().getSelectedItem())));
+		config.put(new ConfigEntryString("key", "On Press", value -> settingsWindow.getKeyTrigger().setSelectedItem(value), () -> String.valueOf(settingsWindow.getKeyTrigger().getSelectedItem())));
+		config.put(new ConfigEntryBoolean("ping", false, value -> setPin(value), () -> frame.isAlwaysOnTop()));
+		
+		config.load(SETTINGS_FILE);
 	}
 
 	public void startTimer() {
@@ -347,8 +263,6 @@ public class FlowTimer {
 			timerStartTime = System.nanoTime();
 			getSelectedTimer().onTimerStart(timerStartTime);
 			setInterface(false);
-			timerLabelUpdateThread = new TimerLabelUpdateThread(getSelectedTimer().getTimerLabelUpdateCallback());
-			new Thread(timerLabelUpdateThread).start();
 		}
 	}
 
@@ -363,9 +277,9 @@ public class FlowTimer {
 		}
 		isTimerRunning = false;
 		areActionsScheduled = false;
-		timerLabelUpdateThread.stop();
 		getSelectedTimer().onTimerStop();
 		setInterface(true);
+		frame.repaint();
 	}
 
 	public void stopTimerSegment(int index) {
@@ -392,9 +306,9 @@ public class FlowTimer {
 		tabbedPane.setEnabled(enabled);
 	}
 
-	public void setPin(boolean val) {
-		frame.setAlwaysOnTop(val);
-		pinLabel.setIcon(ImageLoader.loadImage("/image/pin_" + val + ".png"));
+	public void setPin(boolean value) {
+		frame.setAlwaysOnTop(value);
+		pinLabel.setIcon(ImageLoader.loadImage("/image/pin_" + value + ".png"));
 	}
 
 	public BaseTimer getSelectedTimer() {
@@ -429,8 +343,8 @@ public class FlowTimer {
 		return settingsWindow;
 	}
 
-	public VisualPanel getVisualPanel() {
-		return visualPanel;
+	public void setVisualCueColor(Color visualCueColor) {
+		this.visualCueColor = visualCueColor;
 	}
 
 	public boolean isTimerRunning() {
@@ -441,12 +355,12 @@ public class FlowTimer {
 		return areActionsScheduled;
 	}
 
-	public TimerLabelUpdateThread getTimerLabelUpdateThread() {
-		return timerLabelUpdateThread;
-	}
-
 	public long getTimerStartTime() {
 		return timerStartTime;
+	}
+	
+	public JLabel getTimerLabel() {
+		return timerLabel;
 	}
 
 	public static void main(String[] args) {
@@ -524,38 +438,6 @@ public class FlowTimer {
 					stopTimerSegment(index);
 				}
 			}
-		}
-	}
-
-	public class TimerLabelUpdateThread implements Runnable {
-
-		private ITimerLabelUpdateCallback timerLabelCallback;
-		private boolean isStopped;
-
-		public TimerLabelUpdateThread(ITimerLabelUpdateCallback timerLabelCallback) {
-			this.timerLabelCallback = timerLabelCallback;
-		}
-
-		public void run() {
-			while(!isStopped) {
-				long time = timerLabelCallback.getTime(timerStartTime);
-				getSelectedTimer().onTimerLabelUpdate(time);
-				setTimerLabel(time);
-				try {
-					// arbitrary sleep time to lower cpu usage
-					Thread.sleep(3);
-				} catch (InterruptedException e) {
-					ErrorHandler.handleException(e, false);
-				}
-			}
-		}
-
-		public void stop() {
-			isStopped = true;
-		}
-
-		public ITimerLabelUpdateCallback getTimerLabelCallback() {
-			return timerLabelCallback;
 		}
 	}
 }
