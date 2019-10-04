@@ -249,7 +249,7 @@ public class FlowTimer {
 		config.put(new ConfigEntryBoolean("globalUpDown", true, value -> settingsWindow.getGlobalUpDown().setSelected(value), () -> settingsWindow.getGlobalUpDown().isSelected()));
 		config.put(new ConfigEntryString("beepSound", "ping1", value -> settingsWindow.setBeepSound(value), () -> String.valueOf(settingsWindow.getBeepSound().getSelectedItem())));
 		config.put(new ConfigEntryString("key", "On Press", value -> settingsWindow.getKeyTrigger().setSelectedItem(value), () -> String.valueOf(settingsWindow.getKeyTrigger().getSelectedItem())));
-		config.put(new ConfigEntryBoolean("ping", false, value -> setPin(value), () -> frame.isAlwaysOnTop()));
+		config.put(new ConfigEntryBoolean("pin", false, value -> setPin(value), () -> frame.isAlwaysOnTop()));
 		
 		config.load(SETTINGS_FILE);
 	}
