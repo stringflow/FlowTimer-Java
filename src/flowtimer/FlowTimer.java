@@ -7,7 +7,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -53,9 +52,6 @@ public class FlowTimer {
 	public static final int WIDTH = 451;
 	public static final int HEIGHT = 287;
 	public static final String TITLE = "FlowTimer 1.8";
-	public static final File MAIN_FOLDER = new File(System.getenv("appdata") + "\\flowtimer");
-	public static final File SETTINGS_FILE = new File(MAIN_FOLDER.getPath() + "\\flowtimer.config");
-	public static final File IMPORTED_BEEPS_FOLDER = new File(MAIN_FOLDER.getPath() + "\\beeps");
 	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	
 	private JFrame frame;
@@ -86,6 +82,7 @@ public class FlowTimer {
 	private ArrayList<Action> actions;
 
 	public FlowTimer() throws Exception {
+		FileSystem.init();
 		initSwing();
 
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
@@ -115,7 +112,7 @@ public class FlowTimer {
 
 				OpenAL.dispose();
 				try {
-					config.save(SETTINGS_FILE);
+					config.save(FileSystem.getSettingsFile());
 				} catch (Exception e1) {
 					ErrorHandler.handleException(e1, false);
 				}
@@ -187,18 +184,17 @@ public class FlowTimer {
 	}
 	
 	private void initSwing() throws Exception {
-		if(!MAIN_FOLDER.exists()) {
-			MAIN_FOLDER.mkdirs();
+		if(!FileSystem.getFlowtimerRootFolder().exists()) {
+			FileSystem.getFlowtimerRootFolder().mkdirs();
 		}
-		if(!IMPORTED_BEEPS_FOLDER.exists()) {
-			IMPORTED_BEEPS_FOLDER.mkdirs();
+		if(!FileSystem.getBeepFolder().exists()) {
+			FileSystem.getBeepFolder().mkdirs();
 		}
 
 		// 1.7 file migration
-		File oldSettings = new File(System.getenv("appdata") + "\\flowtimer.config");
-		if(oldSettings.exists() && !SETTINGS_FILE.exists()) {
-			Files.copy(Paths.get(oldSettings.getAbsolutePath()), Paths.get(SETTINGS_FILE.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
-			oldSettings.delete();
+		if(FileSystem.getOldSettingsFile().exists() && !FileSystem.getSettingsFile().exists()) {
+			Files.copy(Paths.get(FileSystem.getOldSettingsFile().getAbsolutePath()), Paths.get(FileSystem.getSettingsFile().getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+			FileSystem.getOldSettingsFile().delete();
 		}
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -207,8 +203,8 @@ public class FlowTimer {
 	private void loadConfig() throws Exception {
 		config = new Config();
 		config.put(new ConfigComment("File System"));
-		config.put(new ConfigEntryString("fileSystemLocationBuffer", System.getProperty("user.home") + "\\Desktop", value -> delayTimer.setFileSystemLocationBuffer(value), () -> delayTimer.getFileSystemLocationBuffer()));
-		config.put(new ConfigEntryString("beepImportLocationBuffer", System.getProperty("user.home") + "\\Desktop", value -> settingsWindow.setBeepImportLocationBuffer(value), () -> settingsWindow.getBeepImportLocationBuffer()));
+		config.put(new ConfigEntryString("FileSystemLocationBuffer", FileSystem.getUserHomeFolder().getPath(), value -> delayTimer.setFileSystemLocationBuffer(value), () -> delayTimer.getFileSystemLocationBuffer()));
+		config.put(new ConfigEntryString("beepImportLocationBuffer", FileSystem.getUserHomeFolder().getPath(), value -> settingsWindow.setBeepImportLocationBuffer(value), () -> settingsWindow.getBeepImportLocationBuffer()));
 		config.put(new ConfigEntryString("timerLocationBuffer", "null", value -> delayTimer.setTimerLocationBuffer(value), () -> delayTimer.getTimerLocationBuffer()));
 		
 		config.put(new ConfigNewLine());
@@ -244,14 +240,14 @@ public class FlowTimer {
 		config.put(new ConfigEntryInt("calibrationNumBeeps", 5, value -> calibrationTimer.getNumBeepsComponent().getComponent().setValue(value), () -> calibrationTimer.getNumBeepsComponent().getComponent().getValue()));
 		
 		config.put(new ConfigNewLine());
-		config.put(new ConfigComment("Misc. Settings"));
+		config.put(new ConfigComment("Misc."));
 		config.put(new ConfigEntryBoolean("globalStartStop", true, value -> settingsWindow.getGlobalStartStop().setSelected(value), () -> settingsWindow.getGlobalStartStop().isSelected()));
 		config.put(new ConfigEntryBoolean("globalUpDown", true, value -> settingsWindow.getGlobalUpDown().setSelected(value), () -> settingsWindow.getGlobalUpDown().isSelected()));
 		config.put(new ConfigEntryString("beepSound", "ping1", value -> settingsWindow.setBeepSound(value), () -> String.valueOf(settingsWindow.getBeepSound().getSelectedItem())));
 		config.put(new ConfigEntryString("key", "On Press", value -> settingsWindow.getKeyTrigger().setSelectedItem(value), () -> String.valueOf(settingsWindow.getKeyTrigger().getSelectedItem())));
 		config.put(new ConfigEntryBoolean("pin", false, value -> setPin(value), () -> frame.isAlwaysOnTop()));
 		
-		config.load(SETTINGS_FILE);
+		config.load(FileSystem.getSettingsFile());
 	}
 
 	public void startTimer() {

@@ -19,7 +19,7 @@ public class ErrorHandler {
 		if(deleteSettings) {
 			int result = JOptionPane.showOptionDialog(null, "Do you want to delete the settings file?", "Error", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, 0);
 			if(result == 0) {
-				FlowTimer.SETTINGS_FILE.delete();
+				FileSystem.getSettingsFile().delete();
 			}
 		}
 		System.exit(1);

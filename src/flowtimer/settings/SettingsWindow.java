@@ -24,6 +24,7 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import flowtimer.ErrorHandler;
+import flowtimer.FileSystem;
 import flowtimer.FlowTimer;
 import flowtimer.IntTextField;
 import flowtimer.OpenAL;
@@ -97,7 +98,7 @@ public class SettingsWindow extends JDialog {
 				if(Arrays.stream(defaultBeeps).anyMatch(beepSound.getSelectedItem().toString()::equals)) {
 					flowtimer.getSoundAction().setSound(OpenAL.createSource("/sound/" + beepSound.getSelectedItem() + ".wav"));
 				} else {
-					flowtimer.getSoundAction().setSound(OpenAL.createSource(new File(FlowTimer.IMPORTED_BEEPS_FOLDER + "\\" + beepSound.getSelectedItem() + ".wav")));
+					flowtimer.getSoundAction().setSound(OpenAL.createSource(new File(FileSystem.getBeepFolder() + FileSystem.getSystemSeperator() + beepSound.getSelectedItem() + ".wav")));
 				}
 			} catch (Exception e1) {
 				ErrorHandler.handleException(e1, false);
@@ -107,7 +108,7 @@ public class SettingsWindow extends JDialog {
 			}
 		});
 
-		for(File customBeep : FlowTimer.IMPORTED_BEEPS_FOLDER.listFiles()) {
+		for(File customBeep : FileSystem.getBeepFolder().listFiles()) {
 			if(customBeep.getName().endsWith(".wav")) {
 				beepSound.addItem(customBeep.getName().split("\\.")[0]);
 			}
@@ -140,7 +141,7 @@ public class SettingsWindow extends JDialog {
 						}
 					}
 					OpenAL.createSource(file);
-					Files.copy(Paths.get(file.getPath()), Paths.get(FlowTimer.IMPORTED_BEEPS_FOLDER + "\\" + file.getName()), StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(Paths.get(file.getPath()), Paths.get(FileSystem.getBeepFolder() + FileSystem.getSystemSeperator() + file.getName()), StandardCopyOption.REPLACE_EXISTING);
 					if(!overwrite) {
 						beepSound.addItem(fileName);
 					}
