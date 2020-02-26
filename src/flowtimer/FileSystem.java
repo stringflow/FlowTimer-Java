@@ -14,7 +14,7 @@ public class FileSystem {
 			programRootFolder = new File(System.getenv("appdata"));
 		} else if(os.contains("NIX") || os.contains("NUX") || os.contains("AIX")) {
 			programRootFolder = new File(System.getProperty("user.home"));
-		} else if(os.contains("MAX")) {
+		} else if(os.contains("MAC")) {
 			programRootFolder = new File(System.getProperty("user.home") + fileSeperator + "Library" + fileSeperator + "Application Support");
 		} else {
 			ErrorHandler.handleException(new IllegalArgumentException("Invalid OS: " + os), false);
